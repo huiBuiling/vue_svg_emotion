@@ -139,7 +139,14 @@ import 'vue-json-pretty/lib/styles.css'
 import Clipboard from 'clipboard'
 import html2canvas from 'html2canvas'
 import { V3ColorPicker } from 'v3-color-picker'
-import { computed, onUnmounted, reactive, ref, watchEffect } from 'vue'
+import {
+  computed,
+  onMounted,
+  onUnmounted,
+  reactive,
+  ref,
+  watchEffect,
+} from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
 
 import IconPrev from '@/assets/group/icons/icon-back.svg'
@@ -149,7 +156,11 @@ import IconFlip from '@/assets/group/icons/icon-flip.svg'
 import IconNext from '@/assets/group/icons/icon-next.svg'
 import { AVATAR_Index } from '@/utils/constant'
 import { svgData } from '@/utils/dynamic-data'
-import { initAvatarData } from '@/utils/initData'
+import {
+  colorsSettingData,
+  getRandomAvatarOption,
+  initAvatarData,
+} from '@/utils/initData'
 import type { AvatarOption } from '@/utils/shapeBaseTypes'
 import { NONE } from '@/utils/shapeBaseTypes'
 import { slideJson } from '@/utils/slide'
@@ -194,13 +205,7 @@ const avatarOption: AvatarOption = reactive({
 })
 
 // 配色对应
-let colorsSetting = ref({
-  bg: '#FFEBA4',
-  tops: '#FC909F',
-  clothes: '#F48150',
-  glasses: '#000',
-  earrings: '#F4D150',
-})
+let colorsSetting = ref(colorsSettingData)
 
 // 渲染avatar
 const svgContent = ref('')
@@ -422,7 +427,13 @@ async function handleDownload() {
 // 随机生成
 const randomize = () => {
   console.log(`output->activeShape`, activeShape)
+  const _cur = getRandomAvatarOption().data
+  avatarOption.widgets = _cur
 }
+
+onMounted(() => {
+  randomize()
+})
 
 onUnmounted(() => {
   clipboard.destroy()

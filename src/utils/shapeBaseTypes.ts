@@ -51,3 +51,23 @@ export interface AvatarOption {
 
   widgets: Partial<AvatarWidgets>
 }
+
+export interface AvatarSettings {
+  // gender: [Gender, Gender]
+  // wrapper: WrapperShape[]
+  face: FaceShape[]
+  tops: TopsShape[]
+  ear: EarShape[]
+  earrings: EarringsShape[]
+  eyebrows: EyebrowsShape[]
+  eyes: EyesShape[]
+  nose: NoseShape[]
+  mouth: MouthShape[]
+  beard: BeardShape[]
+  glasses: GlassesShape[]
+  clothes: ClothesShape[]
+
+  // commonColors: string[]
+  // backgroundColor: string[]
+  // skinColor: string[]
+}
