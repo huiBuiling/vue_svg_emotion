@@ -334,6 +334,7 @@ const onChange = (type: string, shape: string) => {
   }
   activeShape.value[type] = shape
   avatarOption.widgets = _cur
+  oldData[curIndex.value.toString()].widgets = JSON.parse(JSON.stringify(_cur))
 }
 
 // 导入svg数据
