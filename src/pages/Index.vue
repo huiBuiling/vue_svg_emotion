@@ -1,4 +1,3 @@
-<!-- eslint-disable import/no-unresolved -->
 <template>
   <div class="home">
     <div class="home_line"></div>
@@ -58,18 +57,10 @@
       </div>
       <div v-for="item in slideJson" :key="item.type" class="view">
         <div class="t_title">{{ item.name }}</div>
-        <!-- 'nose' -->
         <div
           v-if="['tops', 'clothes', 'earrings', 'glasses'].includes(item.type)"
           class="t_color"
         >
-          <!-- <color-picker
-            :show-opacity="false"
-            :default-color="item.type === 'tops' ? hairColor : clothesColor"
-            :value="item.type === 'tops' ? hairColor : clothesColor"
-            @change="changeColor($event, item.type)"
-          /> -->
-          <!-- :value="colors(item.type) || ''" -->
           <v3-color-picker
             size="medium"
             :value="colorsSetting[item.type] || ''"
@@ -157,6 +148,7 @@ import IconNext from '@/assets/group/icons/icon-next.svg'
 import { AVATAR_Index } from '@/utils/constant'
 import { svgData } from '@/utils/dynamic-data'
 import {
+  _activeShape,
   colorsSettingData,
   getRandomAvatarOption,
   initAvatarData,
@@ -211,19 +203,7 @@ let colorsSetting = ref(colorsSettingData)
 const svgContent = ref('')
 
 // 选中项
-const activeShape = ref({
-  face: 'base',
-  tops: 'wave',
-  ear: 'detached',
-  earrings: 'hoop',
-  eyebrow: 'eyelashesdown',
-  eyes: 'eyeshadow',
-  nose: 'curve',
-  glasses: 'none',
-  mouth: 'nervous',
-  beard: 'none',
-  clothes: 'collared',
-})
+const activeShape = ref(_activeShape)
 
 // 切换颜色
 const changeColor = (e: string, type: string) => {
@@ -243,9 +223,9 @@ const changeColor = (e: string, type: string) => {
   }
 }
 
-watchEffect(() => {
-  console.log(`output->colorsSetting`, colorsSetting)
-})
+// watchEffect(() => {
+//   console.log(`output->colorsSetting`, colorsSetting)
+// })
 
 // 切换选项
 const onChange = (type: string, shape: string) => {
@@ -290,8 +270,7 @@ const getSvgRawList = async () => {
   // 获取所有svg
   const svgInitData = getSvgInitData()
   const cur = await Promise.all(svgInitData.cur).then((raw) => {
-    // <g transform="translate(0, 0)"> 导致显示位置错乱
-    // raw.len = 11: ['<svg\n  width="200"\n  height="320"\n  viewBox="0 0 2…"white"\n      />\n    </clipPath>\n  </defs>\n</svg>', '<svg\n  width="96"\n  height="49"\n  viewBox="0 0 96 …20.4021)"\n      fill="black"\n    />\n  </g>\n</svg>', '<svg\n  width="32"\n  height="40"\n  viewBox="0 0 32 …1921"\n      stroke-width="4"\n    />\n  </g>\n</svg>', '<svg\n  width="149"\n  height="51"\n  viewBox="0 0 14…      stroke-linecap="round"\n    />\n  </g>\n</svg>', '<svg\n  width="240"\n  height="212"\n  viewBox="0 0 2…lack"\n      stroke-width="4"\n    />\n  </g>\n</svg>', '', '<svg\n  width="64"\n  height="64"\n  viewBox="0 0 64 …lack"\n      stroke-width="4"\n    />\n  </g>\n</svg>', '<svg\n  width="48"\n  height="52"\n  viewBox="0 0 48 …#000"\n      stroke-width="4"\n    />\n  </g>\n</svg>', '', '', '<svg\n  width="281"\n  height="93"\n  viewBox="0 0 28…    stroke-linejoin="round"\n    />\n  </g>\n</svg>\n']
+    // console.log('raw', raw)
     const _cur = raw.map((svgRaw, i) => {
       /**
        * sortedList: len = 11, 二维数组
@@ -339,7 +318,7 @@ const getSvgRawList = async () => {
 
 // 依赖追踪
 watchEffect(async () => {
-  console.log(`output->watchEffect`, avatarOption.widgets)
+  // console.log(`output->watchEffect`, avatarOption.widgets)
   const svgRawList = await getSvgRawList()
 
   const size = ref(280)
@@ -442,12 +421,12 @@ onUnmounted(() => {
 
 <style lang="scss">
 .home {
+  // background-color: #14161a;
+  display: flex;
   width: 100%;
   height: 100%;
   overflow: hidden;
   color: #a4b2c1;
-  // background-color: #14161a;
-  display: flex;
   // background: linear-gradient( 135deg, #81FFEF 10%, #F067B4 100%);
   // background: radial-gradient(rgba(105, 103, 254, 0.8) 20%, rgba(105, 103, 254, 0.6) 40%, rgba(105, 103, 254, 0.4) 60%, rgba(105, 103, 254, 0.2) 80%, transparent 100%);
   // background: radial-gradient(rgba(105, 103, 254, 0.8) 20%, #81FFEF 40%, rgba(105, 103, 254, 0.4) 60%, #F067B4 80%, transparent 100%);
@@ -456,6 +435,7 @@ onUnmounted(() => {
     position: fixed;
     top: 0;
     left: 0;
+    z-index: -1;
     width: 100%;
     height: 100%;
     background: radial-gradient(
@@ -465,7 +445,6 @@ onUnmounted(() => {
       rgb(240, 103, 180, 0.4) 80%,
       transparent 100%
     );
-    z-index: -1;
     opacity: 0.7;
   }
   .mask {
@@ -478,32 +457,32 @@ onUnmounted(() => {
   }
 
   .left {
-    width: 300px;
-    height: 100%;
-    background: #2c323a;
-    padding: 20px;
     position: fixed;
     top: 0;
     left: 0;
+    width: 300px;
+    height: 100%;
+    padding: 20px;
+    background: #2c323a;
     box-shadow: 10px 0 30px rgb(0, 0, 0, 0.5);
 
     .left_top {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      text-align: left;
       margin-bottom: 20px;
+      text-align: left;
       span {
-        font-size: 20px;
         font-weight: bold;
+        font-size: 20px;
       }
     }
     .close {
-      background: #6a707e;
-      border-radius: 50%;
-      padding: 5px;
       width: 20px;
       height: 20px;
+      padding: 5px;
+      background: #6a707e;
+      border-radius: 50%;
       cursor: pointer;
     }
     .code_view {
@@ -513,14 +492,14 @@ onUnmounted(() => {
 
     .copy-btn {
       width: 100px;
+      margin-top: 20px;
+      padding: 10px;
+      font-weight: 600;
+      font-size: 14px;
       // background-color: #404854;
       background: rgba(255, 255, 255, 0.6);
       border-radius: 10px;
-      font-weight: 600;
       cursor: pointer;
-      font-size: 14px;
-      padding: 10px;
-      margin-top: 20px;
     }
   }
 
@@ -534,10 +513,10 @@ onUnmounted(() => {
       position: relative;
       width: 280px;
       height: 280px;
-      background: #fff;
-      border-radius: 5px;
       margin: 0 auto;
       overflow: hidden;
+      background: #fff;
+      border-radius: 5px;
     }
 
     .view {
@@ -548,13 +527,6 @@ onUnmounted(() => {
       height: 100%;
     }
 
-    .face {
-    }
-    .tops {
-      top: -60px;
-      left: -28px;
-    }
-
     .avatar-payload {
       position: relative;
       z-index: 2;
@@ -562,22 +534,16 @@ onUnmounted(() => {
       height: 100%;
     }
 
-    // svg{
-    //   width: 80%;
-    //   height: 80%;
-    //   margin: 10%;
-    // }
-
     .opera_group {
-      width: 220px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 220px;
+      margin: 50px auto;
       padding: 10px;
       // background-color: #2a2f37;
       background: rgba(255, 255, 255, 0.6);
       border-radius: 100px;
-      margin: 50px auto;
     }
 
     .opera_group_i {
@@ -588,37 +554,37 @@ onUnmounted(() => {
       height: 40px;
       background-color: #404854;
       border-radius: 50%;
-      transition: opacity 0.2s;
-      opacity: 0.6;
       cursor: pointer;
+      opacity: 0.6;
+      transition: opacity 0.2s;
     }
 
     .btn_group {
-      width: 330px;
       display: flex;
       align-items: center;
       justify-content: space-between;
+      width: 330px;
       margin: 0 auto;
     }
 
     .btn_i {
       width: 100px;
       padding: 10px;
+      font-weight: 600;
+      font-size: 14px;
       // background-color: #404854;
       background: rgba(255, 255, 255, 0.6);
       border-radius: 10px;
-      font-weight: 600;
       cursor: pointer;
-      font-size: 14px;
     }
   }
 
   .right {
     width: 326px;
-    border-left: 3px solid rgba(255, 255, 255, 0.6);
     padding: 0 20px 60px;
-    text-align: left;
     overflow-y: auto;
+    text-align: left;
+    border-left: 3px solid rgba(255, 255, 255, 0.6);
 
     &::-webkit-scrollbar {
       width: 4px;
@@ -640,12 +606,12 @@ onUnmounted(() => {
     }
 
     .t_title {
-      font-size: 16px;
-      font-weight: 600;
-      line-height: 23px;
       margin: 40px 0 20px;
       // color: #fff;
       color: #1e1d1d;
+      font-weight: 600;
+      font-size: 16px;
+      line-height: 23px;
     }
 
     .t_con {
@@ -657,6 +623,7 @@ onUnmounted(() => {
     .con_item {
       width: 80px;
       height: 80px;
+      margin: 10px;
       // background-color: #2c323a;
       // border: 1px solid #2c323a;
       // background-color: #2b2c2e26;
@@ -664,7 +631,6 @@ onUnmounted(() => {
       background: rgba(255, 255, 255, 0.6);
       border: 2px solid rgba(255, 255, 255, 0.6);
       border-radius: 10px;
-      margin: 10px;
       cursor: pointer;
     }
 
@@ -680,10 +646,10 @@ onUnmounted(() => {
     }
 
     .none {
+      font-weight: normal;
       font-size: 30px;
       line-height: 80px;
       text-align: center;
-      font-weight: normal;
     }
   }
 }
@@ -697,13 +663,13 @@ onUnmounted(() => {
 }
 
 .v-enter-from {
-  opacity: 0;
   transform: translateX(-300px);
+  opacity: 0;
 }
 
 .v-enter-to {
-  opacity: 1;
   transform: translateX(0);
+  opacity: 1;
 }
 
 .v-leave-to {

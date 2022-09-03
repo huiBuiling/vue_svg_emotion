@@ -68,16 +68,24 @@ export const SETTINGS: Readonly<AvatarSettings> = {
 const commonColors = [
   '#6BD9E9',
   '#FC909F',
-  '#F4D150',
-  '#E0DDFF',
-  '#D2EFF3',
-  '#FFEDEF',
+  // '#F4D150',
+  // '#E0DDFF',
+  // '#D2EFF3',
   '#FFEBA4',
   '#506AF4',
   '#F48150',
   '#48A99A',
   '#C09FFF',
   '#FD6F5D',
+  '#2C4331',
+  '#2D2F24',
+  '#805F26',
+  '#DCAA9A',
+  '#BB9895',
+  // '#E9E7F6',
+  '#8B9CC5',
+  '#7388A3',
+  // '#D9E59A',
 ]
 
 export const colorsSettingData = {
@@ -88,6 +96,20 @@ export const colorsSettingData = {
   earrings: '#F4D150',
 }
 
+export const _activeShape = {
+  face: 'base',
+  tops: 'wave',
+  ear: 'detached',
+  earrings: 'hoop',
+  eyebrow: 'eyelashesdown',
+  eyes: 'eyeshadow',
+  nose: 'curve',
+  glasses: 'none',
+  mouth: 'nervous',
+  beard: 'none',
+  clothes: 'collared',
+}
+
 /**
  * 先获取所有属性
  * 对应每个属性随机数
@@ -95,30 +117,42 @@ export const colorsSettingData = {
  */
 export const getRandomAvatarOption = () => {
   // console.log(`output->SETTINGS`, SETTINGS.topsShape)
+  const _bgColorIndex = Math.floor(
+    Math.random() * Object.keys(commonColors).length
+  )
+  colorsSettingData.bg = commonColors[_bgColorIndex]
+
   for (const key in SETTINGS) {
     if (key === 'beard') {
-      break
+      continue
     }
     // 选项中随机选一个
     const _curIndex = Math.floor(Math.random() * SETTINGS[key].length)
-    const _curColor = commonColors[_curIndex]
-    // 设置到对象中
-    setShapeValue(key, SETTINGS[key][_curIndex], _curColor)
+    let _curColorIndex = Math.floor(
+      Math.random() * Object.keys(commonColors).length
+    )
+    _curColorIndex =
+      _bgColorIndex == _curColorIndex ? _curColorIndex + 1 : _curColorIndex
 
-    // console.log(`output->SETTINGS[key]`, SETTINGS[key], _curIndex)
+    // 设置到对象中
+    setShapeValue(key, SETTINGS[key][_curIndex], commonColors[_curColorIndex])
   }
 
-  return { data: initAvatarData, colorsSettingData }
+  return { data: initAvatarData, colorsSettingData, _activeShape }
 }
 
 export const setShapeValue = (type, shape, color?) => {
-  if (Object.keys(colorsSettingData).includes(type)) {
-    colorsSettingData[type] = color
-  }
   const _cur = initAvatarData
-  _cur[type] = {
-    shape: shape,
-    fillColor: color || '#F48150',
+  _cur[type].shape = shape
+  _activeShape[type] = shape
+
+  console.log(`output->SETTINGS[key]`, type, shape)
+
+  if (Object.keys(colorsSettingData).includes(type)) {
+    colorsSettingData[type] = color || '#000'
+    _cur[type].fillColor = color || '#000'
+
+    // console.log(`output->SETTINGS[key]`, type, shape, _cur[type].fillColor)
   }
   initAvatarData = { ..._cur }
   // console.log(`output->type`, type, shape, color, initAvatarData)
