@@ -15,11 +15,29 @@
 
       <!-- opera_group  -->
       <div class="opera_group">
-        <div class="opera_group_i prev">
-          <img :src="actions[0].icon" :alt="actions[0].tip" />
+        <div
+          class="opera_group_i prev"
+          :style="{
+            opacity: curIndex == 0 ? 0.3 : 0.6,
+          }"
+        >
+          <img
+            :src="actions[0].icon"
+            :alt="actions[0].tip"
+            @click="handleProgre(actions[0].type)"
+          />
         </div>
-        <div class="opera_group_i next">
-          <img :src="actions[1].icon" :alt="actions[1].tip" />
+        <div
+          class="opera_group_i next"
+          :style="{
+            opacity: endIndex == curIndex ? 0.3 : 0.6,
+          }"
+        >
+          <img
+            :src="actions[1].icon"
+            :alt="actions[1].tip"
+            @click="handleProgre(actions[1].type)"
+          />
         </div>
         <div class="opera_group_i" @click="handleRotate">
           <img :src="actions[2].icon" :alt="actions[2].tip" />
@@ -153,7 +171,7 @@ import {
   getRandomAvatarOption,
   initAvatarData,
 } from '@/utils/initData'
-import type { AvatarOption } from '@/utils/shapeBaseTypes'
+import type { AvatarOption, AvatarWidgets } from '@/utils/shapeBaseTypes'
 import { NONE } from '@/utils/shapeBaseTypes'
 import { slideJson } from '@/utils/slide'
 
@@ -168,21 +186,24 @@ const actions = computed(() => [
   {
     // type: ActionType.Undo,
     icon: IconPrev,
+    type: 'prev',
     tip: '撤回',
-    // disabled: !canUndo.value,
+    // disabled: curIndex.value == 0,
   },
   {
-    // type: ActionType.Redo,
     icon: IconNext,
+    type: 'next',
     tip: '前进',
-    // disabled: !canRedo.value,
+    // disabled: endIndex.value == curIndex.value,
   },
   {
     icon: IconFlip,
+    type: 'flip',
     tip: '翻转',
   },
   {
     icon: IconCode,
+    type: 'code',
     tip: '代码',
   },
   {
@@ -192,9 +213,14 @@ const actions = computed(() => [
 ])
 
 // 初始化头像数据
-const avatarOption: AvatarOption = reactive({
+let avatarOption: AvatarOption = reactive({
   widgets: initAvatarData,
 })
+
+// 用于撤销前进数据
+let oldData: AvatarWidgets[] = reactive([])
+let curIndex = ref(0)
+let endIndex = ref(0)
 
 // 配色对应
 let colorsSetting = ref(colorsSettingData)
@@ -204,6 +230,23 @@ const svgContent = ref('')
 
 // 选中项
 const activeShape = ref(_activeShape)
+
+// 后退，前进
+const handleProgre = (type) => {
+  if (type === 'prev' && curIndex.value > 0) {
+    curIndex.value = curIndex.value - 1
+    const _cur = {
+      ...oldData[curIndex.value],
+    }
+    avatarOption.widgets = _cur
+  } else if (type === 'next' && curIndex.value < oldData.length - 1) {
+    curIndex.value = curIndex.value + 1
+    const _cur = {
+      ...oldData[curIndex.value],
+    }
+    avatarOption.widgets = _cur
+  }
+}
 
 // 切换颜色
 const changeColor = (e: string, type: string) => {
@@ -237,10 +280,8 @@ const onChange = (type: string, shape: string) => {
       shape: shape,
     },
   }
-
   activeShape.value[type] = shape
   avatarOption.widgets = _cur
-  console.log(`output->avatarOption`, avatarOption)
 }
 
 // 导入svg数据
@@ -319,6 +360,14 @@ const getSvgRawList = async () => {
 // 依赖追踪
 watchEffect(async () => {
   // console.log(`output->watchEffect`, avatarOption.widgets)
+
+  // oldData.push(JSON.parse(JSON.stringify(avatarOption.widgets)))
+  // endIndex.value = oldData.length - 1
+  // if (curIndex.value <= 1) {
+  // curIndex.value = oldData.length - 1
+  // }
+  // console.log(`output->oldData`, curIndex.value, endIndex.value, oldData)
+
   const svgRawList = await getSvgRawList()
 
   const size = ref(280)
@@ -404,14 +453,18 @@ async function handleDownload() {
 }
 
 // 随机生成
-const randomize = () => {
-  console.log(`output->activeShape`, activeShape)
+const randomize = (type?) => {
   const _cur = getRandomAvatarOption().data
   avatarOption.widgets = _cur
+  oldData.push(JSON.parse(JSON.stringify(_cur)))
+  endIndex.value = type == 'init' ? 0 : endIndex.value + 1
+  curIndex.value = type == 'init' ? 0 : curIndex.value + 1
+
+  console.log(`output->type`, curIndex.value, endIndex.value, oldData)
 }
 
 onMounted(() => {
-  randomize()
+  randomize('init')
 })
 
 onUnmounted(() => {

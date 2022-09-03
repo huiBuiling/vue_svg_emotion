@@ -146,7 +146,7 @@ export const setShapeValue = (type, shape, color?) => {
   _cur[type].shape = shape
   _activeShape[type] = shape
 
-  console.log(`output->SETTINGS[key]`, type, shape)
+  // console.log(`output->SETTINGS[key]`, type, shape)
 
   if (Object.keys(colorsSettingData).includes(type)) {
     colorsSettingData[type] = color || '#000'
