@@ -255,24 +255,30 @@ const handleProgre = (type) => {
     }
 
     if (_curI > -1) {
-      colorsSetting.value.bg = oldData[_curI].bgColor
       radius.value = oldData[_curI].bgRdius
       const _cur = {
         ...oldData[_curI],
       }
-      changeActShape(_cur.widgets)
+      changeActShape(_cur.widgets, oldData[_curI].bgColor)
       avatarOption.widgets = _cur.widgets
     }
   }
 }
 
 // 前进后退时选中项跟随变化
-const changeActShape = (data) => {
-  let _cur = {}
-  for (const key in data) {
-    _cur[key] = data[key].shape
+const changeActShape = (data, bgColor) => {
+  let _curActShape = {}
+  let _curActColor = {
+    bg: bgColor,
   }
-  activeShape.value = _cur
+  for (const key in data) {
+    _curActShape[key] = data[key].shape
+    if (colorsSetting.value[key]) {
+      _curActColor[key] = data[key].fillColor
+    }
+  }
+  activeShape.value = _curActShape
+  colorsSetting.value = _curActColor
 }
 
 // 背景圆角
