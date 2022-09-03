@@ -138,7 +138,11 @@ export const getRandomAvatarOption = () => {
     setShapeValue(key, SETTINGS[key][_curIndex], commonColors[_curColorIndex])
   }
 
-  return { data: initAvatarData, colorsSettingData, _activeShape }
+  return {
+    data: initAvatarData,
+    colorsSettingData,
+    shape: _activeShape,
+  }
 }
 
 export const setShapeValue = (type, shape, color?) => {

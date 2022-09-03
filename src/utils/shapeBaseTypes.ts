@@ -52,6 +52,12 @@ export interface AvatarOption {
   widgets: Partial<AvatarWidgets>
 }
 
+export interface AvatarOldOption {
+  bgColor: string
+  bgRdius: number
+  widgets: Partial<AvatarWidgets>
+}
+
 export interface AvatarSettings {
   // gender: [Gender, Gender]
   // wrapper: WrapperShape[]
