@@ -2,6 +2,10 @@
 
 ## 参考这个大大的作品：https://github.com/Codennnn/vue-color-avatar
 
+
+## 效果预览
+![image](https://github.com/huiBuiling/vue3-temple/blob/master/result.png)
+
 ## Vue 3 + TypeScript + Vite
 
 ```sh
