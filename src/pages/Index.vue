@@ -227,16 +227,12 @@ const actions = computed(() => [
 ])
 
 // 初始化头像数据
-// let avatarOption: AvatarOption = reactive({
-//   widgets: {},
-// })
-
 let avatarOption: AvatarOption = reactive({
-  widgets: computed(() => store.widgetsData),
+  widgets: store.widgetsData,
 })
 
 // 用于撤销前进数据
-let oldData: AvatarOldOption[] = reactive([])
+let oldData: AvatarOldOption[] = reactive(store.widgetsDataArr)
 let curIndex = ref(0)
 let endIndex = ref(0)
 
@@ -257,7 +253,7 @@ const radius = ref(20)
 const handleRadius = (e) => {
   console.log('e_handleRadius', e.target.value)
   radius.value = +e.target.value
-  oldData[curIndex.value.toString()].bgRdius = radius.value
+  store.updateWidgetArrBg(curIndex.value, 'bgRdius', radius.value)
 }
 
 /**
@@ -270,7 +266,7 @@ const changeColor = (e: string, type: string) => {
   console.log(`output->changeColor`, type)
   if (type === 'bg') {
     colorsSetting.value[type] = e
-    oldData[curIndex.value.toString()].bgColor = e
+    store.updateWidgetArrBg(curIndex.value, 'bgColor', e)
   } else {
     colorsSetting.value[type] = e
     const _cur = {
@@ -281,16 +277,30 @@ const changeColor = (e: string, type: string) => {
       },
     }
     store.updateWidget(_cur)
-    // 不转换会导致数据前后不一致问题
-    oldData[curIndex.value.toString()].widgets = JSON.parse(
-      JSON.stringify(_cur)
-    )
+    store.updateWidgetArr(curIndex.value, type, {
+      ...avatarOption.widgets[type],
+      fillColor: e,
+    })
   }
 }
 
-// watchEffect(() => {
-//   console.log(`output->colorsSetting`, colorsSetting)
-// })
+// 切换选项
+const onChange = (type: string, shape: string) => {
+  console.log(`output->onChange`, type, shape)
+  const _cur = {
+    ...avatarOption.widgets,
+    [type]: {
+      ...avatarOption.widgets[type],
+      shape: shape,
+    },
+  }
+  activeShape.value[type] = shape
+  store.updateWidget(_cur)
+  store.updateWidgetArr(curIndex.value, type, {
+    ...avatarOption.widgets[type],
+    shape: shape,
+  })
+}
 
 // 导入svg数据
 const getSvgInitData = () => {
@@ -374,14 +384,15 @@ const randomize = (type?) => {
   const { colorsSettingData, data, shape } = getRandomAvatarOption()
 
   activeShape.value = shape
-  oldData.push({
-    bgColor: colorsSetting.value['bg'],
-    bgRdius: radius.value,
-    widgets: JSON.parse(JSON.stringify(data)),
-  })
+
   endIndex.value = type == 'init' ? 0 : endIndex.value + 1
   curIndex.value = type == 'init' ? 0 : curIndex.value + 1
   store.updateWidget(data)
+  store.addWidgetArr({
+    bgColor: colorsSettingData['bg'],
+    bgRdius: radius.value,
+    widgets: JSON.parse(JSON.stringify(data)),
+  })
   isRandomize.value = false
   colorsSetting.value = { ...colorsSettingData }
 }
@@ -411,21 +422,6 @@ watch(
   }
   // { immediate: true }
 )
-
-// 切换选项
-const onChange = (type: string, shape: string) => {
-  console.log(`output->onChange`, type, shape)
-  const _cur = {
-    ...avatarOption.widgets,
-    [type]: {
-      ...avatarOption.widgets[type],
-      shape: shape,
-    },
-  }
-  activeShape.value[type] = shape
-  store.updateWidget(_cur)
-  oldData[curIndex.value.toString()].widgets = JSON.parse(JSON.stringify(_cur))
-}
 
 // 前进后退时选中项跟随变化
 const changeActShape = (data, bgColor) => {
