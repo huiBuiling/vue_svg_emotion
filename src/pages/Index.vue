@@ -65,11 +65,14 @@
           "changeColor($event, 'bg')" 初始就会执行
           改为
           ($event) => changeColor($event, 'bg')
+
+          !!!注意：watchEffect导致的，非上述问题
            -->
           <v3-color-picker
+            btn
             size="medium"
             :value="colorsSetting['bg'] || ''"
-            @change="($event) => changeColor($event, 'bg')"
+            @change="changeColor($event, 'bg')"
           />
         </div>
       </div>
@@ -80,9 +83,10 @@
           class="t_color"
         >
           <v3-color-picker
+            btn
             size="medium"
             :value="colorsSetting[item.type] || ''"
-            @change="($event) => changeColor($event, item.type)"
+            @change="changeColor($event, item.type)"
           />
         </div>
         <div class="t_con">
@@ -161,6 +165,7 @@ import {
   onUnmounted,
   reactive,
   ref,
+  watch,
   watchEffect,
 } from 'vue'
 import VueJsonPretty from 'vue-json-pretty'
@@ -170,18 +175,18 @@ import IconClose from '@/assets/group/icons/icon-close.svg'
 import IconCode from '@/assets/group/icons/icon-code.svg'
 import IconFlip from '@/assets/group/icons/icon-flip.svg'
 import IconNext from '@/assets/group/icons/icon-next.svg'
+// import { highlightJSON } from "@/utils/toJson";
+import { widgetStore } from '@/store/icons'
 import { AVATAR_Index } from '@/utils/constant'
 import { svgData } from '@/utils/dynamic-data'
-import { getRandomAvatarOption, initAvatarData } from '@/utils/initData'
+import { getRandomAvatarOption } from '@/utils/initData'
 import type { AvatarOldOption, AvatarOption } from '@/utils/shapeBaseTypes'
 import { NONE } from '@/utils/shapeBaseTypes'
 import { slideJson } from '@/utils/slide'
 
-// import { highlightJSON } from "@/utils/toJson";
-// import { iconsStore } from '@/store/icons'
-// const store = iconsStore()
+const store = widgetStore()
+console.log(`output->stroe`, store)
 // const name = computed(() => store.name)
-// const svgContent = computed(() => store.initIcon)
 // store.updateName('lee')
 
 const tips = () => {
@@ -216,13 +221,18 @@ const actions = computed(() => [
   },
   {
     icon: IconClose,
+    type: 'close',
     tip: '关闭',
   },
 ])
 
 // 初始化头像数据
+// let avatarOption: AvatarOption = reactive({
+//   widgets: {},
+// })
+
 let avatarOption: AvatarOption = reactive({
-  widgets: {},
+  widgets: computed(() => store.widgetsData),
 })
 
 // 用于撤销前进数据
@@ -239,65 +249,25 @@ const svgContent = ref('')
 // 选中项
 const activeShape = ref({})
 
-// 后退，前进
-const handleProgre = (type) => {
-  if (
-    (type === 'prev' && curIndex.value > 0) ||
-    (type === 'next' && curIndex.value < oldData.length - 1)
-  ) {
-    let _curI = -1
-    if (type === 'prev' && curIndex.value > 0) {
-      _curI = curIndex.value - 1
-      curIndex.value = curIndex.value - 1
-    } else {
-      _curI = curIndex.value + 1
-      curIndex.value = curIndex.value + 1
-    }
-
-    if (_curI > -1) {
-      radius.value = oldData[_curI].bgRdius
-      const _cur = {
-        ...oldData[_curI],
-      }
-      changeActShape(_cur.widgets, oldData[_curI].bgColor)
-      avatarOption.widgets = _cur.widgets
-    }
-  }
-}
-
-// 前进后退时选中项跟随变化
-const changeActShape = (data, bgColor) => {
-  let _curActShape = {}
-  let _curActColor = {
-    bg: bgColor,
-  }
-  for (const key in data) {
-    _curActShape[key] = data[key].shape
-    if (colorsSetting.value[key]) {
-      _curActColor[key] = data[key].fillColor
-    }
-  }
-  activeShape.value = _curActShape
-  colorsSetting.value = _curActColor
-}
+// 处理 randomize就会执行，伴随changeColor方法执行
+let isRandomize = ref(true)
 
 // 背景圆角
 const radius = ref(20)
 const handleRadius = (e) => {
-  console.log('e', e.target.value)
+  console.log('e_handleRadius', e.target.value)
   radius.value = +e.target.value
   oldData[curIndex.value.toString()].bgRdius = radius.value
 }
 
 /**
  * 切换颜色 ->
- * 一进来就执行了，导致很多问题
- * 注意写法
- * "changeColor($event, 'bg')" 初始就会执行
-    改为
-    ($event) => changeColor($event, 'bg')
+ * 会伴随randomize方法执行，因为依赖 colorsSetting
  */
 const changeColor = (e: string, type: string) => {
+  if (colorsSetting.value[type] == e) return
+
+  console.log(`output->changeColor`, type)
   if (type === 'bg') {
     colorsSetting.value[type] = e
     oldData[curIndex.value.toString()].bgColor = e
@@ -310,7 +280,7 @@ const changeColor = (e: string, type: string) => {
         fillColor: e,
       },
     }
-    avatarOption.widgets = _cur
+    store.updateWidget(_cur)
     // 不转换会导致数据前后不一致问题
     oldData[curIndex.value.toString()].widgets = JSON.parse(
       JSON.stringify(_cur)
@@ -322,23 +292,9 @@ const changeColor = (e: string, type: string) => {
 //   console.log(`output->colorsSetting`, colorsSetting)
 // })
 
-// 切换选项
-const onChange = (type: string, shape: string) => {
-  console.log(`output->onChange`, type, shape)
-  const _cur = {
-    ...avatarOption.widgets,
-    [type]: {
-      ...avatarOption.widgets[type],
-      shape: shape,
-    },
-  }
-  activeShape.value[type] = shape
-  avatarOption.widgets = _cur
-  oldData[curIndex.value.toString()].widgets = JSON.parse(JSON.stringify(_cur))
-}
-
 // 导入svg数据
 const getSvgInitData = () => {
+  console.log(`output->getSvgInitData2`)
   // 层级处理
   const sortedList = Object.entries(avatarOption.widgets).sort(
     ([prevShape, prev], [nextShape, next]) => {
@@ -363,6 +319,8 @@ const getSvgInitData = () => {
 const getSvgRawList = async () => {
   // 获取所有svg
   const svgInitData = getSvgInitData()
+
+  console.log(`output->getSvgRawList3`)
   const cur = await Promise.all(svgInitData.cur).then((raw) => {
     // console.log('raw', raw)
     const _cur = raw.map((svgRaw, i) => {
@@ -410,16 +368,37 @@ const getSvgRawList = async () => {
   return cur
 }
 
-// 依赖追踪
-watchEffect(async () => {
-  const svgRawList = await getSvgRawList()
+// 随机生成
+const randomize = (type?) => {
+  console.log(`output->randomize_1`)
+  const { colorsSettingData, data, shape } = getRandomAvatarOption()
 
-  const size = ref(280)
-  svgContent.value = `
+  activeShape.value = shape
+  oldData.push({
+    bgColor: colorsSetting.value['bg'],
+    bgRdius: radius.value,
+    widgets: JSON.parse(JSON.stringify(data)),
+  })
+  endIndex.value = type == 'init' ? 0 : endIndex.value + 1
+  curIndex.value = type == 'init' ? 0 : curIndex.value + 1
+  store.updateWidget(data)
+  isRandomize.value = false
+  colorsSetting.value = { ...colorsSettingData }
+}
+
+// 依赖追踪
+const size = 280
+watch(
+  [avatarOption],
+  async ([newAvatarOption]) => {
+    console.log('watch', avatarOption, '--------new:', newAvatarOption)
+
+    const svgRawList = await getSvgRawList()
+    svgContent.value = `
     <svg
       width="280"
       height="280"
-      viewBox="0 0 ${size.value / 0.7} ${size.value / 0.7}"
+      viewBox="0 0 ${size / 0.7} ${size / 0.7}"
       preserveAspectRatio="xMidYMax meet"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
@@ -429,13 +408,73 @@ watchEffect(async () => {
       </g>
     </svg>
   `
+  }
+  // { immediate: true }
+)
 
-  // console.log('svgContent', svgContent)
-})
+// 切换选项
+const onChange = (type: string, shape: string) => {
+  console.log(`output->onChange`, type, shape)
+  const _cur = {
+    ...avatarOption.widgets,
+    [type]: {
+      ...avatarOption.widgets[type],
+      shape: shape,
+    },
+  }
+  activeShape.value[type] = shape
+  store.updateWidget(_cur)
+  oldData[curIndex.value.toString()].widgets = JSON.parse(JSON.stringify(_cur))
+}
+
+// 前进后退时选中项跟随变化
+const changeActShape = (data, bgColor) => {
+  console.log(`output->changeActShape`)
+  let _curActShape = {}
+  let _curActColor = {
+    bg: bgColor,
+  }
+  for (const key in data) {
+    _curActShape[key] = data[key].shape
+    if (colorsSetting.value[key]) {
+      _curActColor[key] = data[key].fillColor
+    }
+  }
+  activeShape.value = _curActShape
+  colorsSetting.value = _curActColor
+}
+
+// 后退，前进
+const handleProgre = (type) => {
+  console.log(`output->handleProgre`)
+  if (
+    (type === 'prev' && curIndex.value > 0) ||
+    (type === 'next' && curIndex.value < oldData.length - 1)
+  ) {
+    let _curI = -1
+    if (type === 'prev' && curIndex.value > 0) {
+      _curI = curIndex.value - 1
+      curIndex.value = curIndex.value - 1
+    } else {
+      _curI = curIndex.value + 1
+      curIndex.value = curIndex.value + 1
+    }
+
+    if (_curI > -1) {
+      radius.value = oldData[_curI].bgRdius
+      const _cur = {
+        ...oldData[_curI],
+      }
+      changeActShape(_cur.widgets, oldData[_curI].bgColor)
+      store.updateWidget(_cur.widgets)
+    }
+  }
+}
 
 // 翻转
 const isRotate = ref(false)
 const handleRotate = () => {
+  console.log(`output->handleRotate`)
   isRotate.value = !isRotate.value
 }
 
@@ -443,12 +482,14 @@ const handleRotate = () => {
 const showCode = ref(false)
 const codeData = ref({})
 const handleCode = () => {
+  console.log(`output->handleCode`)
   const _cur = JSON.stringify(avatarOption.widgets, null, 4)
   codeData.value = JSON.parse(_cur)
   showCode.value = true
   console.log(`output->avatarOption.widgets`, _cur, codeData.value)
 }
 const closeCode = () => {
+  console.log(`output->closeCode`)
   showCode.value = false
 }
 
@@ -456,6 +497,7 @@ const closeCode = () => {
 let clipboard = new Clipboard('#copy-code-btn')
 const isCopying = ref(false)
 const copyCode = async () => {
+  console.log(`output->copyCode`)
   clipboard.on('success', (e: any) => {
     isCopying.value = true
 
@@ -470,6 +512,7 @@ const downloading = ref(false)
 const avatarRef = ref(null)
 // 下载图片
 async function handleDownload() {
+  console.log(`output->handleDownload`)
   try {
     downloading.value = true
     const avatarEle = avatarRef.value
@@ -491,22 +534,6 @@ async function handleDownload() {
   }
 }
 
-// 随机生成
-const randomize = (type?) => {
-  const { colorsSettingData, data, shape } = getRandomAvatarOption()
-  colorsSetting.value = { ...colorsSettingData }
-  activeShape.value = shape
-  oldData.push({
-    bgColor: colorsSetting.value['bg'],
-    bgRdius: radius.value,
-    widgets: JSON.parse(JSON.stringify(data)),
-  })
-  avatarOption.widgets = data
-  endIndex.value = type == 'init' ? 0 : endIndex.value + 1
-  curIndex.value = type == 'init' ? 0 : curIndex.value + 1
-  console.log(`output->type`, JSON.parse(JSON.stringify(data)))
-}
-
 onBeforeMount(() => {
   randomize('init')
 })
@@ -517,290 +544,5 @@ onUnmounted(() => {
 </script>
 
 <style lang="scss">
-.home {
-  // background-color: #14161a;
-  display: flex;
-  width: 100%;
-  height: 100%;
-  overflow: hidden;
-  color: #a4b2c1;
-  // background: linear-gradient( 135deg, #81FFEF 10%, #F067B4 100%);
-  // background: radial-gradient(rgba(105, 103, 254, 0.8) 20%, rgba(105, 103, 254, 0.6) 40%, rgba(105, 103, 254, 0.4) 60%, rgba(105, 103, 254, 0.2) 80%, transparent 100%);
-  // background: radial-gradient(rgba(105, 103, 254, 0.8) 20%, #81FFEF 40%, rgba(105, 103, 254, 0.4) 60%, #F067B4 80%, transparent 100%);
-  // background: radial-gradient(rgba(105, 103, 254, 0.8) 10%, rgb(129, 255, 239, .5) 40%, rgba(105, 103, 254, 0.4) 60%, rgb(240, 103, 180, .4) 80%, transparent 100%);
-  .home_line {
-    position: fixed;
-    top: 0;
-    left: 0;
-    z-index: -1;
-    width: 100%;
-    height: 100%;
-    background: radial-gradient(
-      rgba(105, 103, 254, 0.8) 10%,
-      rgb(129, 255, 239, 0.5) 40%,
-      rgba(105, 103, 254, 0.4) 60%,
-      rgb(240, 103, 180, 0.4) 80%,
-      transparent 100%
-    );
-    opacity: 0.7;
-  }
-  .mask {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgb(0, 0, 0, 0.5);
-  }
-
-  .left {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 300px;
-    height: 100%;
-    padding: 20px;
-    background: #2c323a;
-    box-shadow: 10px 0 30px rgb(0, 0, 0, 0.5);
-
-    .left_top {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      margin-bottom: 20px;
-      text-align: left;
-      span {
-        font-weight: bold;
-        font-size: 20px;
-      }
-    }
-    .close {
-      width: 20px;
-      height: 20px;
-      padding: 5px;
-      background: #6a707e;
-      border-radius: 50%;
-      cursor: pointer;
-    }
-    .code_view {
-      background: #fff;
-      border-radius: 5px;
-    }
-
-    .copy-btn {
-      width: 100px;
-      margin-top: 20px;
-      padding: 10px;
-      font-weight: 600;
-      font-size: 14px;
-      // background-color: #404854;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 10px;
-      cursor: pointer;
-    }
-  }
-
-  .center {
-    flex: 1;
-    align-items: center;
-    justify-content: center;
-    padding-top: 150px;
-
-    .avatar {
-      position: relative;
-      width: 280px;
-      height: 280px;
-      margin: 0 auto;
-      overflow: hidden;
-      background: #fff;
-      border-radius: 5px;
-    }
-
-    .view {
-      position: absolute;
-      top: 0;
-      left: 0;
-      width: 100%;
-      height: 100%;
-    }
-
-    .avatar-payload {
-      position: relative;
-      z-index: 2;
-      width: 100%;
-      height: 100%;
-    }
-
-    .opera_group {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 220px;
-      margin: 50px auto;
-      padding: 10px;
-      // background-color: #2a2f37;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 100px;
-    }
-
-    .opera_group_i {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      width: 40px;
-      height: 40px;
-      background-color: #404854;
-      border-radius: 50%;
-      cursor: pointer;
-      opacity: 0.6;
-      transition: opacity 0.2s;
-    }
-
-    .btn_group {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      width: 330px;
-      margin: 0 auto;
-    }
-
-    .btn_i {
-      width: 100px;
-      padding: 10px;
-      font-weight: 600;
-      font-size: 14px;
-      // background-color: #404854;
-      background: rgba(255, 255, 255, 0.6);
-      border-radius: 10px;
-      cursor: pointer;
-    }
-  }
-
-  input[type='range'] {
-    width: 100% !important;
-    // background-size: 33% 100%; /*设置左右宽度比例*/
-    height: 8px;
-    margin: 8px 0 20px;
-    background: -webkit-linear-gradient(#6967fe, #6967fe) no-repeat, #acabff;
-    border-radius: 10px;
-    outline: none;
-    cursor: pointer;
-    -webkit-appearance: none; /*清除系统默认样式*/
-  }
-  /*拖动块的样式*/
-  input[type='range']::-webkit-slider-thumb {
-    width: 16px;
-    height: 16px;
-    background: #f8f9fa;
-    border: solid 1px #ddd;
-    border-radius: 50%;
-    -webkit-appearance: none;
-  }
-
-  .right {
-    width: 320px;
-    min-width: 320px;
-    padding: 0 20px 60px;
-    overflow-y: auto;
-    text-align: left;
-    border-left: 3px solid rgba(255, 255, 255, 0.6);
-
-    &::-webkit-scrollbar {
-      width: 4px;
-      height: 6px;
-    }
-    // 滚动区域背景
-    &::-webkit-scrollbar-track-piece {
-      background-color: rgb(17, 16, 16);
-      background-color: white;
-      -webkit-border-radius: 6px;
-    }
-
-    // 竖向滚动条
-    &::-webkit-scrollbar-thumb:vertical {
-      height: 5px;
-      background-color: rgb(70, 68, 68);
-      background-color: #aaaaaa;
-      -webkit-border-radius: 6px;
-    }
-
-    .t_title {
-      margin: 40px 0 20px;
-      // color: #fff;
-      color: #1e1d1d;
-      font-weight: 600;
-      font-size: 16px;
-      line-height: 23px;
-    }
-
-    .t_con {
-      display: flex;
-      flex-wrap: wrap;
-      align-items: center;
-    }
-
-    .con_item_con {
-      position: relative;
-      width: 80px;
-      height: 120px;
-      margin: 10px;
-      color: #818699;
-      font-size: 14px;
-      text-align: center;
-    }
-    .con_item {
-      position: relative;
-      width: 80px;
-      height: 80px;
-      background: rgba(255, 255, 255, 0.6);
-      border: 2px solid rgba(255, 255, 255, 0.6);
-      border-radius: 10px;
-      cursor: pointer;
-    }
-
-    .active,
-    .con_item:hover {
-      border: 2px solid #6967fe;
-    }
-
-    svg {
-      width: 80%;
-      height: 80%;
-      margin: 10%;
-    }
-
-    .none {
-      font-weight: normal;
-      font-size: 30px;
-      line-height: 80px;
-      text-align: center;
-    }
-  }
-}
-
-/* 设置持续时间和动画函数
-没有设置name，就是v-xx, 设置后就是 [name]-xx
-*/
-.v-enter-active,
-.v-leave-active {
-  transition: opacity 0.7s ease;
-}
-
-.v-enter-from {
-  transform: translateX(-300px);
-  opacity: 0;
-}
-
-.v-enter-to {
-  transform: translateX(0);
-  opacity: 1;
-}
-
-.v-leave-to {
-  opacity: 0;
-}
-
-.t_color {
-  position: relative;
-}
+@import './index.scss';
 </style>
