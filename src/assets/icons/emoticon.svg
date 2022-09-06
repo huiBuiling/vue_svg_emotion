@@ -1,0 +1,19 @@
+<svg xmlns="http://www.w3.org/2000/svg" version="1.1" xmlns:xlink="http://www.w3.org/1999/xlink"
+  xmlns:svgjs="http://svgjs.dev/svgjs" viewBox="0 0 800 800">
+  <g stroke-linecap="round">
+    <path
+      d="M650 450.00000405860374C650 595.1342751583479 545.1342710997442 712.78772784377 400 712.78772784377C254.866368286445 712.78772784377 150 595.1342751583479 150 450.00000405860374C150 304.8663723450487 254.866368286445 187.2122802734375 400 187.2122802734375C545.1342710997442 187.2122802734375 650 304.8663723450487 650 450.00000405860374Z "
+      fill="currentColor" opacity="0.25" filter="url(#ccclaymoji-blur)"></path>
+    <circle r="250" cx="400" cy="400" fill="hsl(335, 77%, 50%)"></circle>
+    <circle r="250" cx="400" cy="400" fill="url(#ccclaymoji-grad-dark)"></circle>
+    <circle r="250" cx="400" cy="400" fill="url(#ccclaymoji-grad-light)"></circle>
+    <ellipse rx="23.5" ry="25" cx="350" cy="375" fill="black" filter="url(#eye-shadow)"></ellipse>
+    <ellipse rx="23.5" ry="25" cx="350" cy="375" fill="url(#eye-light)" filter="url(#inner-blur)"></ellipse>
+    <ellipse rx="23.5" ry="25" cx="450" cy="375" fill="black" filter="url(#eye-shadow)"></ellipse>
+    <ellipse rx="23.5" ry="25" cx="450" cy="375" fill="url(#eye-light)" filter="url(#inner-blur)"></ellipse>
+    <path d="M350 512.5Q400 562.5 450 512.5 " stroke-width="20" stroke="hsl(3, 100%, 51%)" fill="none"
+      filter="url(#mouth-shadow)"></path>
+    <path d="M350 512.5Q400 562.5 450 512.5 " stroke-width="6.666666666666667" stroke="url(#mouth-light)" fill="none"
+      filter="url(#inner-blur)"></path>
+  </g>
+</svg>
