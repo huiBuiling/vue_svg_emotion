@@ -58,6 +58,7 @@
         result="blur"
       ></feGaussianBlur>
     </filter> -->
+        <!-- 眼睛阴影 -->
         <filter
           id="eye-shadow"
           x="-100%"
@@ -72,8 +73,8 @@
             stdDeviation="10"
             dx="10"
             dy="10"
-            flood-color="#000000"
-            flood-opacity="0.2"
+            :flood-color="eye.shadowColor"
+            :flood-opacity="eye.shadowOpacity"
             x="0%"
             y="0%"
             width="100%"
@@ -81,7 +82,8 @@
             result="dropShadow"
           ></feDropShadow>
         </filter>
-        <linearGradient
+        <!-- 眼睛灯光 -->
+        <!-- <linearGradient
           id="eye-light"
           gradientTransform="rotate(-25)"
           x1="50%"
@@ -91,7 +93,9 @@
         >
           <stop offset="20%" stop-color="#555555" stop-opacity="1"></stop>
           <stop offset="100%" stop-color="black" stop-opacity="0"></stop>
-        </linearGradient>
+        </linearGradient> -->
+
+        <!-- 嘴部灯光 -->
         <linearGradient id="mouth-light" x1="50%" y1="0%" x2="50%" y2="100%">
           <stop offset="0%" stop-color="#ff9667" stop-opacity="1"></stop>
           <stop
@@ -100,8 +104,8 @@
             stop-opacity="0"
           ></stop>
         </linearGradient>
-        <!--  -->
-        <!-- <filter
+        <!-- 嘴部阴影 -->
+        <filter
           id="mouth-shadow"
           x="-100%"
           y="-100%"
@@ -115,15 +119,15 @@
             stdDeviation="10"
             dx="10"
             dy="10"
-            flood-color="#c20000"
-            flood-opacity="0.2"
             x="0%"
             y="0%"
             width="100%"
             height="100%"
             result="dropShadow"
+            :flood-color="mouth.shadowColor"
+            :flood-opacity="mouth.shadowOpacity"
           ></feDropShadow>
-        </filter> -->
+        </filter>
       </defs>
       <g stroke-linecap="round">
         <!-- bg 叠加阴影 -->
@@ -146,13 +150,13 @@
       d="M585.5 399.99999617554647C585.5 507.6896253315567 507.68962915601026 594.9884872241398 400 594.9884872241398C292.3108452685422 594.9884872241398 214.5 507.6896253315567 214.5 399.99999617554647C214.5 292.3108414440887 292.3108452685422 205.01150512695312 400 205.01150512695312C507.68962915601026 205.01150512695312 585.5 292.3108414440887 585.5 399.99999617554647Z "
       fill="url(#ccclaymoji-grad-light)"
     ></path> -->
-        <!-- eye -->
+        <!-- filter="url(#eye-shadow)" -->
         <ellipse
           rx="18"
           ry="25"
           cx="284"
           cy="375"
-          :fill="eyeColor"
+          :fill="eye.baseColor"
           filter="url(#eye-shadow)"
         ></ellipse>
         <!-- <ellipse
@@ -168,7 +172,7 @@
           ry="54"
           cx="435"
           cy="375"
-          :fill="eyeColor"
+          :fill="eye.baseColor"
           filter="url(#eye-shadow)"
         ></ellipse>
         <!-- <ellipse
@@ -179,14 +183,15 @@
           fill="url(#eye-light)"
           filter="url(#inner-blur)"
         ></ellipse> -->
-        <!-- mouth -->
-        <!-- filter： mouth-shadow -->
+        <!-- 嘴巴 x,y -> d值变化 -->
         <path
           d="M325.5 516.5Q375.5 394.5 424.5 516.5 "
-          stroke-width="20"
-          :stroke="mouthColor"
+          :stroke-width="mouth.width"
+          :stroke="mouth.baseColor"
           fill="none"
+          filter="url(#mouth-shadow)"
         ></path>
+        <!-- 嘴巴 灯光 -->
         <!-- <path
       d="M325.5 516.5Q375.5 394.5 424.5 516.5 "
       stroke-width="6.666666666666667"
@@ -217,7 +222,7 @@ console.log(`output->stroe`, store)
     * 类型：
         feBlend:与图像相结合的滤镜
         feColorMatrix:用于彩色滤光片转换
-        feGaussianBlur:模糊滤镜 
+        feGaussianBlur:模糊滤镜
         feMerge:多滤镜叠加滤镜
         feOffset:过滤阴影
         feDistantLight:用于照明过滤
@@ -229,8 +234,37 @@ console.log(`output->stroe`, store)
         in：指定滤镜效果的输入源,可以是某个滤镜导出的result,也可以是下面6个值
  */
 const bgColor = ref('hsl(70, 69%, 50%)')
-const eyeColor = ref('black')
-const mouthColor = ref('hsl(3, 100%, 51%)')
+
+// 头部：类型，大小，回转
+const head = ref({
+  baseColor: 'hsl(3, 100%, 51%)',
+  size: 30,
+  type: 1,
+})
+
+// 嘴巴：颜色，类型，宽度，倾斜度，微笑/皱眉，旋转，x,y
+const mouth = ref({
+  width: 30,
+  length: 30,
+  type: 1, // 'smile -> 1 /frown -> 2'
+  baseColor: 'hsl(3, 100%, 51%)',
+  shadowColor: '#c20000',
+  shadowOpacity: 0.9,
+  rotation: 30,
+  positionX: 0,
+  positionY: 0,
+})
+
+// 左右眼: 颜色， 尺寸x,y，位置x,y， 类型
+const eye = ref({
+  baseColor: 'black',
+  x: 0,
+  y: 0,
+  shadowColor: '#c20000',
+  shadowOpacity: 0.9,
+  positionX: 0,
+  positionY: 0,
+})
 </script>
 
 <style lang="scss"></style>
