@@ -22,8 +22,7 @@
           class="opera_group_i"
           :style="{
             opacity:
-              ['prev', 'next'].includes(item.type) &&
-              (item.type === 'prev' ? curIndex === 0 : curIndex === endIndex)
+              ['prev', 'next'].includes(item.type) && (item.type === 'prev' ? curIndex === 0 : curIndex === endIndex)
                 ? 0.3
                 : 0.6,
           }"
@@ -36,13 +35,7 @@
       <!-- btn_group -->
       <div class="btn_group">
         <button class="btn_i btn_1" @click="randomize">随机生成</button>
-        <button
-          class="btn_i btn_2"
-          :disabled="downloading"
-          @click="handleDownload"
-        >
-          下载头像
-        </button>
+        <button class="btn_i btn_2" :disabled="downloading" @click="handleDownload">下载头像</button>
         <button class="btn_i btn_3" @click="tips">批量生成</button>
       </div>
     </div>
@@ -68,20 +61,12 @@
 
           !!!注意：watchEffect导致的，非上述问题
            -->
-          <v3-color-picker
-            btn
-            size="medium"
-            :value="colorsSetting['bg'] || ''"
-            @change="changeColor($event, 'bg')"
-          />
+          <v3-color-picker btn size="medium" :value="colorsSetting['bg'] || ''" @change="changeColor($event, 'bg')" />
         </div>
       </div>
       <div v-for="item in slideJson" :key="item.type" class="view">
         <div class="t_title">{{ item.name }}</div>
-        <div
-          v-if="['tops', 'clothes', 'earrings', 'glasses'].includes(item.type)"
-          class="t_color"
-        >
+        <div v-if="['tops', 'clothes', 'earrings', 'glasses'].includes(item.type)" class="t_color">
           <v3-color-picker
             btn
             size="medium"
@@ -99,8 +84,7 @@
             <div
               class="con_item"
               :class="{
-                active:
-                  activeShape && activeShape[item.type] === itemC.widgetShape,
+                active: activeShape && activeShape[item.type] === itemC.widgetShape,
                 none: itemC.widgetShape === 'none',
               }"
               v-html="itemC.svgRaw"
@@ -119,22 +103,11 @@
         <div class="left">
           <div class="left_top">
             <span> 代码块 </span>
-            <img
-              class="close"
-              :src="actions[4].icon"
-              :alt="actions[4].tip"
-              @click="closeCode"
-            />
+            <img class="close" :src="actions[4].icon" :alt="actions[4].tip" @click="closeCode" />
           </div>
 
           <div class="code_view">
-            <vue-json-pretty
-              :deep="1"
-              show-length
-              show-line-number
-              show-icon
-              :data="codeData"
-            />
+            <vue-json-pretty :deep="1" show-length show-line-number show-icon :data="codeData" />
           </div>
 
           <button
@@ -306,13 +279,11 @@ const onChange = (type: string, shape: string) => {
 const getSvgInitData = () => {
   console.log(`output->getSvgInitData2`)
   // 层级处理
-  const sortedList = Object.entries(avatarOption.widgets).sort(
-    ([prevShape, prev], [nextShape, next]) => {
-      const ix = prev.zIndex ?? AVATAR_Index[prevShape]?.zIndex ?? 0
-      const iix = next.zIndex ?? AVATAR_Index[nextShape]?.zIndex ?? 0
-      return ix - iix
-    }
-  )
+  const sortedList = Object.entries(avatarOption.widgets).sort(([prevShape, prev], [nextShape, next]) => {
+    const ix = prev.zIndex ?? AVATAR_Index[prevShape]?.zIndex ?? 0
+    const iix = next.zIndex ?? AVATAR_Index[nextShape]?.zIndex ?? 0
+    return ix - iix
+  })
 
   const cur: Promise<string>[] = sortedList.map(async ([widgetType, opt]) => {
     if (opt.shape !== NONE && svgData?.[widgetType]?.[opt.shape]) {
@@ -443,10 +414,7 @@ const changeActShape = (data, bgColor) => {
 // 后退，前进
 const handleProgre = (type) => {
   console.log(`output->handleProgre`)
-  if (
-    (type === 'prev' && curIndex.value > 0) ||
-    (type === 'next' && curIndex.value < oldData.length - 1)
-  ) {
+  if ((type === 'prev' && curIndex.value > 0) || (type === 'next' && curIndex.value < oldData.length - 1)) {
     let _curI = -1
     if (type === 'prev' && curIndex.value > 0) {
       _curI = curIndex.value - 1

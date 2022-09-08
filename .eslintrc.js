@@ -45,13 +45,13 @@ module.exports = {
     '@typescript-eslint/consistent-type-imports': 1,
     '@typescript-eslint/no-non-null-assertion': 0,
     '@typescript-eslint/no-explicit-any': 0,
+    'prettier/prettier': [
+      // 换行问题
+      'error',
+      {
+        printWidth: 120,
+      },
+    ],
   },
-  ignorePatterns: [
-    'dist',
-    'public',
-    '!.eslintrc.js',
-    '!.prettierrc.js',
-    '!.stylelintrc.js',
-    '!.lintstagedrc.js',
-  ],
+  ignorePatterns: ['dist', 'public', '!.eslintrc.js', '!.prettierrc.js', '!.stylelintrc.js', '!.lintstagedrc.js'],
 }

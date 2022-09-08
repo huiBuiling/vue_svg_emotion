@@ -1,5 +1,9 @@
 - svg：
 
+  - vanilla js
+  - svg.js: https://svgjs.dev/docs/3.0/
+  - chroma.js: https://github.com/gka/chroma.js
+
   - 参考：
     - https://blog.csdn.net/Z_2010317/article/details/125854597
     - https://www.runoob.com/svg/svg-tutorial.html
@@ -166,7 +170,51 @@
   ```
 
 - 滤镜:<feGaussianBlur> -> (<defs> 和 <filter>)
+
   - https://www.runoob.com/svg/svg-filters-intro.html
+  - - https://www.runoob.com/svg/svg-reference.html
+  - 目前接触到的
+
+    - feGaussianBlur: 模糊
+
+    ```
+
+    ```
+
+    - feDropShadow: 阴影
+      - https://developer.mozilla.org/en-US/docs/Web/API/SVGFEDropShadowElement
+      - in: 标识给定过滤器原语的输入
+      - dx， dy: 元素在其相应的 x，y 轴上的位置偏移。
+      - stdDeviation: 阴影的模糊量(默认值为 0
+      - flood-color: 颜色 | flood-opacity：透明度
+
+    ```
+      z,y: 设置阴影偏移量的两个 <length>值
+      <filter
+          id="mouth-shadow"
+          x="-100%"
+          y="-100%"
+          width="400%"
+          height="400%"
+          filterUnits="objectBoundingBox"
+          primitiveUnits="userSpaceOnUse"
+          color-interpolation-filters="sRGB"
+        >
+          <feDropShadow
+            width="100%"
+            height="100%"
+            x="0%"
+            y="0%"
+            dx="10"
+            dy="10"
+            result="dropShadow"
+            stdDeviation="10"
+            :flood-color="mouth.shadowColor"
+            :flood-opacity="mouth.shadowOpacity"
+          ></feDropShadow>
+        </filter>
+    ```
+
 - 模糊效果
 - 阴影:<feOffset> -> (<defs> 和 <filter>)
 - 渐变
