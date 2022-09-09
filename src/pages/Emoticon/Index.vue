@@ -26,7 +26,7 @@
         </div>
 
         <div v-for="item in Object.keys(head.color)" :key="item" class="t_color">
-          <span>{{ colorText[item] }}</span>
+          <span>{{ typeText[item] }}</span>
           <!-- 默认是哪种类型颜色就会输出对应类型颜色 -->
           <v3-color-picker
             btn
@@ -41,21 +41,36 @@
       <div class="view">
         <div class="t_title">眼睛</div>
         <!-- 左眼，右眼 -->
-        <div v-for="item in Object.keys(eye.left)" :key="item" class="t_input">
-          <span>大小: {{ percent(eye.left[item], eyeMin(item)) }}</span>
+        <div
+          v-for="item in [
+            { name: '左眼', id: 'left' },
+            { name: '右眼', id: 'right' },
+          ]"
+          :key="item.id"
+          class="radio checked"
+          @change="changeEye(item.id)"
+        >
+          <input :id="item.id" v-model="activeEye" :value="item.id" name="radio" type="radio" />
+          <label :for="item.id" :data-text="item.name"></label>
+          <div class="radio__icon"></div>
+        </div>
+
+        <!-- 大小尺寸 -->
+        <div v-for="item in Object.keys(eye[activeEye])" :key="item" class="t_input">
+          <span>{{ typeText[item] }}: </span>
           <input
-            v-model="eye.left[item]"
+            v-model="eye[activeEye][item]"
             type="range"
             :name="item"
             :min="eyeMin(item).min"
             :max="eyeMin(item).max"
-            :style="{ backgroundSize: percent(eye.left[item], eyeMin(item)) }"
+            :style="{ backgroundSize: percent(eye[activeEye][item], eyeMin(item)) }"
             @change="handleSize($event, 'eye', item, 'left')"
           />
         </div>
-
+        <!-- 颜色 -->
         <div v-for="item in Object.keys(eye.color)" :key="item" class="t_color">
-          <span>{{ colorText[item] }}</span>
+          <span>{{ typeText[item] }}</span>
           <!-- 默认是哪种类型颜色就会输出对应类型颜色 -->
           <v3-color-picker
             btn
@@ -95,11 +110,15 @@ import { computed, onBeforeMount, onUnmounted, reactive, ref, watch } from 'vue'
 import SvgIcon from '@/components/SvgIcon.vue'
 
 // 文案对应
-const colorText = {
+const typeText = {
   baseColor: '背景色',
   shadowColor: '阴影色',
   stopColor1: '右下侧色',
   stopColor2: '左上侧色',
+  rx: '尺寸 X',
+  ry: '尺寸 Y',
+  cx: '位置 X',
+  cy: '位置 Y',
 }
 
 // 眼睛可设置的最大最小值
@@ -197,15 +216,21 @@ const tips = () => {
   alert('开发中...')
 }
 
-// 背景圆角
-const radius = ref(20)
+// 切换左右眼
+const activeEye = ref('left')
+const changeEye = (e) => {
+  console.log(`output->e`, e, eye[e])
+  activeEye.value = e
+}
+
+// 切换大小
 const handleSize = (e, type: string, nowType, eyeType?) => {
   // console.log('e_handleRadius', e.target.value)
 
   if (type == 'head') {
     head.value[nowType] = +e.target.value
   } else if (type == 'eye') {
-    eye.value[eyeType][nowType] = +e.target.value
+    eye.value[activeEye.value][nowType] = +e.target.value
   } else if (type == 'mouth') {
   }
 }

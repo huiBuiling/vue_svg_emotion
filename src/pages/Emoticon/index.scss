@@ -60,29 +60,12 @@
     }
 
     .t_input {
+      display: flex;
+      align-items: center;
+      margin: 8px 0 20px;
       span {
         margin-right: 10px;
       }
-    }
-    input[type='range'] {
-      width: 100% !important;
-      // background-size: 33% 100%; /*设置左右宽度比例*/
-      height: 8px;
-      margin: 8px 0 20px;
-      background: -webkit-linear-gradient(#6967fe, #6967fe) no-repeat, #acabff;
-      border-radius: 10px;
-      outline: none;
-      cursor: pointer;
-      -webkit-appearance: none; /*清除系统默认样式*/
-    }
-    /*拖动块的样式*/
-    input[type='range']::-webkit-slider-thumb {
-      width: 16px;
-      height: 16px;
-      background: #f8f9fa;
-      border: solid 1px #ddd;
-      border-radius: 50%;
-      -webkit-appearance: none;
     }
 
     .t_color {
@@ -92,6 +75,168 @@
       & > span {
         margin-right: 10px;
       }
+    }
+  }
+
+  input[type='range'] {
+    width: 70% !important;
+    // background-size: 33% 100%; /*设置左右宽度比例*/
+    height: 8px;
+    // margin: 8px 0 20px;
+    background: -webkit-linear-gradient(#6967fe, #6967fe) no-repeat, #acabff;
+    border-radius: 10px;
+    outline: none;
+    cursor: pointer;
+    -webkit-appearance: none; /*清除系统默认样式*/
+  }
+  /*拖动块的样式*/
+  input[type='range']::-webkit-slider-thumb {
+    width: 16px;
+    height: 16px;
+    background: #f8f9fa;
+    border: 2px solid #6967fe;
+    border-radius: 50%;
+    -webkit-appearance: none;
+  }
+
+  .radio {
+    position: relative;
+    display: inline-block;
+    margin-right: 20px;
+    margin-bottom: 20px;
+    // color: #fff;
+    label {
+      display: inline-block;
+      font-size: 16px;
+      text-align: left;
+      text-transform: uppercase;
+      cursor: pointer;
+    }
+    input {
+      display: none;
+    }
+    .radio__icon {
+      border: 1px solid #6967fe;
+      cursor: pointer;
+      pointer-events: none;
+      &:before,
+      &:after {
+        position: absolute;
+        transition: 0.2s ease-out;
+        content: '';
+      }
+    }
+  }
+  .checked {
+    label {
+      width: 110px;
+      height: 20px;
+      line-height: 20px;
+      transition: all 0.2s;
+
+      &:before,
+      &:after {
+        position: absolute;
+        top: 0;
+        left: 25px;
+        width: 110px;
+        transition: all 0.2s 0.1s ease-out;
+      }
+
+      &:before {
+        content: attr(data-text);
+      }
+    }
+    input:checked ~ .radio__icon:before {
+      animation: wave 0.7s ease-out;
+    }
+    input:checked ~ .radio__icon:after {
+      transform: scale(1);
+      animation: zoomIn 0.2s;
+    }
+    .radio__icon {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 16px;
+      height: 16px;
+      background: #fff;
+      border-radius: 50%;
+      box-shadow: inset 1px 1px 10px rgba(0, 0, 0, 0.15);
+
+      &:before,
+      &:after {
+        border-radius: 50%;
+      }
+      &:before {
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(255, 255, 255, 0.8);
+      }
+      &:after {
+        top: 3px;
+        left: 3px;
+        width: 60%;
+        height: 60%;
+        background: #6967fe;
+        transform: scale(0);
+        transition: none;
+        animation: zoomOut 0.2s ease-out;
+      }
+    }
+    &:hover input:not(:checked) ~ .radio__icon {
+      animation: hover 0.2s;
+    }
+    &:hover input:not(:checked) ~ label:before {
+      text-shadow: 0 1px 0 rgba(0, 0, 0, 0.2);
+    }
+  }
+  @keyframes zoomOut {
+    0% {
+      transform: scale(1);
+    }
+    30% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(0);
+    }
+  }
+  @keyframes zoomIn {
+    0% {
+      transform: scale(0);
+    }
+    90% {
+      transform: scale(1.2);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes hover {
+    0% {
+      transform: scale(1);
+    }
+    30% {
+      transform: scale(1.1);
+    }
+    100% {
+      transform: scale(1);
+    }
+  }
+  @keyframes wave {
+    0% {
+      transform: scale(1);
+      opacity: 1;
+    }
+    40% {
+      opacity: 0.2;
+    }
+    100% {
+      transform: scale(1.5);
+      opacity: 0;
     }
   }
 }
