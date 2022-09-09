@@ -86,14 +86,14 @@
       </filter>
       <!-- 眼睛: 包含上部分叠加色 -> 眼影 -->
       <linearGradient id="eye-light" gradientTransform="rotate(-25)" x1="50%" y1="0%" x2="50%" y2="100%">
-        <stop offset="20%" :stop-color="eye.stopColor1" stop-opacity="1"></stop>
-        <stop offset="100%" :stop-color="eye.stopColor2" stop-opacity="0"></stop>
+        <stop offset="20%" :stop-color="eye.color.stopColor1" stop-opacity="1"></stop>
+        <stop offset="100%" :stop-color="eye.color.stopColor2" stop-opacity="0"></stop>
       </linearGradient>
 
       <!-- 嘴部灯光 -->
       <linearGradient id="mouth-light" x1="50%" y1="0%" x2="50%" y2="100%">
-        <stop offset="0%" :stop-color="mouth.lightColor" stop-opacity="1"></stop>
-        <stop offset="100%" :stop-color="mouth.lightColor2" stop-opacity="0"></stop>
+        <stop offset="0%" :stop-color="mouth.color.lightColor" stop-opacity="1"></stop>
+        <stop offset="100%" :stop-color="mouth.color.lightColor2" stop-opacity="0"></stop>
       </linearGradient>
 
       <!-- 嘴部阴影 -->
@@ -116,7 +116,7 @@
           width="100%"
           height="100%"
           result="dropShadow"
-          :flood-color="mouth.shadowColor"
+          :flood-color="mouth.color.shadowColor"
           :flood-opacity="mouth.shadowOpacity"
         ></feDropShadow>
       </filter>
@@ -151,7 +151,7 @@
         :ry="eye.left.ry"
         :cx="eye.left.cx"
         :cy="eye.left.cy"
-        :fill="eye.baseColor"
+        :fill="eye.color.baseColor"
         filter="url(#eye-shadow)"
       ></ellipse>
       <ellipse
@@ -167,7 +167,7 @@
         :ry="eye.right.ry"
         :cx="eye.right.cx"
         :cy="eye.right.cy"
-        :fill="eye.baseColor"
+        :fill="eye.color.baseColor"
         filter="url(#eye-shadow)"
       ></ellipse>
       <ellipse
@@ -179,17 +179,17 @@
         filter="url(#inner-blur)"
       ></ellipse>
 
-      <!-- 嘴巴 x,y -> d值变化 -->
+      <!-- mouth x,y -> d值变化 -->
       <path
-        d="M325.5 516.5Q375.5 394.5 424.5 516.5 "
-        :stroke-width="mouth.width"
-        :stroke="mouth.baseColor"
+        :d="mouthPath"
+        :stroke-width="20"
+        :stroke="mouth.color.baseColor"
         fill="none"
         filter="url(#mouth-shadow)"
       ></path>
-      <!-- 嘴巴 灯光 -->
+      <!-- mouth 灯光 -->
       <path
-        d="M325.5 516.5Q375.5 394.5 424.5 516.5 "
+        :d="mouthPath"
         :stroke-width="mouth.lightWidth"
         stroke="url(#mouth-light)"
         fill="none"
@@ -200,7 +200,7 @@
 </template>
 
 <script setup lang="ts">
-import { reactive, ref } from 'vue'
+import { computed } from 'vue'
 
 interface VueColorAvatarProps {
   head: any
@@ -218,9 +218,18 @@ const emit = defineEmits<{
   (e: 'change'): void
 }>()
 
-console.log(`output->props`, props)
+// console.log(`output->props`, props.mouth.path)
 // const name = computed(() => store.name)
 // store.updateName('lee')
+
+// 嘴巴：颜色，类型，宽度，倾斜度，微笑/皱眉，旋转，x,y
+const mouthPath = computed(() => {
+  const { s, c, e } = props.mouth.path
+  console.log(`output->props`, `M${s} 512.5Q${c} 562.5 ${e} 512.5`)
+  // cen: M350 512.5Q400 562.5 450 512.5
+  // max: M250 512.5Q300 562.5 550 512.5
+  return `M${s} 512.5Q${c} 562.5 ${e} 512.5`
+})
 
 /**
  * svg： https://blog.csdn.net/Z_2010317/article/details/125854597
@@ -241,22 +250,6 @@ console.log(`output->props`, props)
         result：用于定义一个滤镜效果的输出名字，以便将其用作另一个滤镜效果的输入(in)
         in：指定滤镜效果的输入源,可以是某个滤镜导出的result,也可以是下面6个值
  */
-
-// 头部：类型，大小，回转
-// const head = ref({
-//   baseColor: 'hsl(205, 69%, 50%)',
-//   shadowColor: '#0061a5',
-//   d: 'M750 450.0000117855609C750 653.1879913252028 603.1879795396419 817.9028250847937 400 817.9028250847937C196.812915601023 817.9028250847937 50 653.1879913252028 50 450.0000117855609C50 246.81292738658385 196.812915601023 82.09719848632812 400 82.09719848632812C603.1879795396419 82.09719848632812 750 246.81292738658385 750 450.0000117855609Z',
-//   r: 350,
-//   cx: 400,
-//   cy: 400,
-//   size: 30,
-//   type: 1,
-//   // stopColor1: '#86a600',
-//   // stopColor2: '#efff61',
-//   stopColor1: 'hsl(205, 69%, 50%)',
-//   stopColor2: '#6bbeff',
-// })
 
 // const head2 = ref({
 //   baseColor: 'hsl(70, 69%, 50%)',
@@ -288,40 +281,6 @@ console.log(`output->props`, props)
 //     { x: '497 340.6524712868251' },
 //     { x: '497 399.99999958871194Z' },
 //   ],
-//   size: 30,
-//   type: 1,
-//   stopColor1: '#86a600',
-//   stopColor2: '#efff61',
-// })
-
-// // 嘴巴：颜色，类型，宽度，倾斜度，微笑/皱眉，旋转，x,y
-// const mouth = ref({
-//   width: 30,
-//   lightWidth: 15,
-//   length: 30,
-//   type: 1, // 'smile -> 1 /frown -> 2'
-//   baseColor: 'hsl(3, 100%, 51%)',
-//   shadowColor: '#c20000',
-//   shadowOpacity: 0.9,
-//   lightColor: '#ff9667',
-//   lightColor2: 'hsl(3, 100%, 51%)',
-//   rotation: 30,
-//   positionX: 0,
-//   positionY: 0,
-// })
-
-// // 左右眼: 颜色， 尺寸x,y，位置x,y， 类型
-// const eye = ref({
-//   baseColor: 'black',
-//   x: 0,
-//   y: 0,
-//   shadowColor: '#000000',
-//   shadowOpacity: 0.8,
-//   stopColor1: '#ff5770', // #555555
-//   stopColor2: 'black', // #ff9667
-//   positionX: 0,
-//   positionY: 0,
-// })
 </script>
 
 <style lang="scss">
