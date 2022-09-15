@@ -1,6 +1,12 @@
 # vue3-svg
 
+## 参考这些个大大的作品：
+- https://github.com/Codennnn/vue-color-avatar
+- https://fffuel.co/ccclaymoji/
+
 ## 效果预览
+
+![image](https://github.com/huiBuiling/vue3-temple/blob/master/result.png)
 
 ![image](https://github.com/huiBuiling/vue3-temple/blob/main/result.png)
 
