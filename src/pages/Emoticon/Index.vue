@@ -284,18 +284,19 @@ const handleSize = (e, type: string, nowType) => {
   } else if (type == 'eye') {
     eye.value[activeEye.value][nowType] = +e.target.value
   } else if (type == 'mouth') {
+    // 处理嘴巴大小
     if (nowType == 'size') {
       let _cur = +e.target.value
       if (mouth.value.size > +e.target.value) {
         _cur -= mouth.value.size
         mouth.value.path.s += -_cur
-        mouth.value.path.c += -_cur - 35
+        mouth.value.path.c += -_cur
         mouth.value.path.e -= -_cur
         // console.log(`output->缩小`, '缩小', _cur, mouth.value.path)
       } else {
         _cur -= mouth.value.size
         mouth.value.path.s -= _cur
-        mouth.value.path.c -= _cur - 35
+        mouth.value.path.c -= _cur // - 35
         mouth.value.path.e += _cur
         // console.log(`output->变大`, '变大', _cur, mouth.value.path)
       }
