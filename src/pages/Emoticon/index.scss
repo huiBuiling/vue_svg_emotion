@@ -68,14 +68,16 @@
       }
     }
 
-    .t_color {
+    .t_color_con {
       display: flex;
       align-items: center;
+      justify-content: space-between;
+    }
+    .t_color {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
       margin-bottom: 15px;
-      & > span {
-        width: 70px;
-        margin-right: 10px;
-      }
     }
   }
 

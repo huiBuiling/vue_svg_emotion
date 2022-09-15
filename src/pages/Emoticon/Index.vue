@@ -25,15 +25,17 @@
           />
         </div>
 
-        <div v-for="item in Object.keys(head.color)" :key="item" class="t_color">
-          <span>{{ typeText[item] }}</span>
-          <!-- 默认是哪种类型颜色就会输出对应类型颜色 -->
-          <v3-color-picker
-            btn
-            size="medium"
-            :value="head.color[item] || ''"
-            @change="changeColor($event, 'head', item)"
-          />
+        <div class="t_color_con">
+          <div v-for="item in Object.keys(head.color)" :key="item" class="t_color">
+            <!-- 默认是哪种类型颜色就会输出对应类型颜色 -->
+            <v3-color-picker
+              btn
+              size="medium"
+              :value="head.color[item] || ''"
+              @change="changeColor($event, 'head', item)"
+            />
+            <p>{{ typeText[item] }}</p>
+          </div>
         </div>
       </div>
 
@@ -69,14 +71,16 @@
           />
         </div>
         <!-- 颜色 -->
-        <div v-for="item in Object.keys(eye.color)" :key="item" class="t_color">
-          <span>{{ typeText[item] }}</span>
-          <v3-color-picker
-            btn
-            size="medium"
-            :value="eye.color[item] || ''"
-            @change="changeColor($event, 'eye', item)"
-          />
+        <div class="t_color_con">
+          <div v-for="item in Object.keys(eye.color)" :key="item" class="t_color">
+            <v3-color-picker
+              btn
+              size="medium"
+              :value="eye.color[item] || ''"
+              @change="changeColor($event, 'eye', item)"
+            />
+            <p>{{ typeText[item] }}</p>
+          </div>
         </div>
       </div>
 
@@ -85,8 +89,8 @@
         <!-- 大小尺寸 -->
         <div
           v-for="item in [
+            { name: 'size', num: mouth.size },
             { name: 'width', num: mouth.width },
-            // { name: 'lightWidth', num: mouth.lightWidth },
           ]"
           :key="item.name"
           class="t_input"
@@ -98,19 +102,21 @@
             :name="item.name"
             :min="minAndMax(`m_${item.name}`).min"
             :max="minAndMax(`m_${item.name}`).max"
-            :style="{ backgroundSize: `${(item.num / minAndMax('m_width').max) * 100}%` }"
+            :style="{ backgroundSize: `${(item.num / minAndMax(`m_${item.name}`).max) * 100}%` }"
             @change="handleSize($event, 'mouth', item.name)"
           />
         </div>
 
-        <div v-for="item in Object.keys(mouth.color)" :key="item" class="t_color">
-          <span>{{ typeText[item] }}</span>
-          <v3-color-picker
-            btn
-            size="medium"
-            :value="mouth.color[item] || ''"
-            @change="changeColor($event, 'mouth', item)"
-          />
+        <div class="t_color_con">
+          <div v-for="item in Object.keys(mouth.color)" :key="item" class="t_color">
+            <v3-color-picker
+              btn
+              size="medium"
+              :value="mouth.color[item] || ''"
+              @change="changeColor($event, 'mouth', item)"
+            />
+            <p>{{ typeText[item] }}</p>
+          </div>
         </div>
       </div>
     </div>
@@ -135,7 +141,8 @@ const typeText = {
   ry: '尺寸 Y',
   cx: '位置 X',
   cy: '位置 Y',
-  width: '大小',
+  size: '大小',
+  width: '嘴厚',
   lightWidth: '光宽',
 }
 
@@ -162,11 +169,15 @@ const minAndMax = computed(() => {
         min = 30
         max = 650
         break
-      case 'm_width':
+      case 'm_size':
         // min = 50
         // max = 400
         min = 0
         max = 200
+        break
+      case 'm_width':
+        min = 0
+        max = 50
         break
       // case 'm_light':
       //   min = 30
@@ -190,10 +201,10 @@ const percent = (cur: number, data: { min: number; max: number }) => {
 
 const head = ref({
   color: {
-    baseColor: 'hsl(205, 69%, 50%)',
-    shadowColor: '#0061a5',
-    stopColor1: 'hsl(205, 24%, 88%)',
-    stopColor2: '#6bbeff',
+    baseColor: '#FDC855',
+    shadowColor: '#FA0941',
+    stopColor1: '#E45392',
+    stopColor2: '#EB6367',
   },
   r: 350,
   cx: 400,
@@ -217,7 +228,8 @@ const mouth = ref({
     lightColor2: 'hsl(3, 100%, 51%)',
   },
   shadowOpacity: 0.9, // ?
-  width: 100,
+  size: 100,
+  width: 28,
   lightWidth: 6.666666666666667,
   length: 30,
   type: 1, // 'smile -> 1 /frown -> 2'
@@ -230,23 +242,27 @@ const mouth = ref({
 const eye = ref({
   color: {
     // baseColor: 'rgb(230, 206, 206)',
-    baseColor: 'black',
-    shadowColor: '#6B445D',
-    stopColor1: '#CCCACB',
-    stopColor2: 'rgb(236, 176, 176)',
+    // baseColor: 'hsla(241, 44%, 95%, 0.7)', //'rgb(252, 246, 242)', 'rgba(105,103,254, 0.5)'
+    // shadowColor: '#E71C81',
+    // stopColor1: '#CCCACB',
+    // stopColor2: 'rgb(230, 31, 31)',
+    baseColor: 'rgba(0,0,0,.5)', //'rgb(252, 246, 242)', 'rgba(105,103,254, 0.5)'
+    shadowColor: '#000000',
+    stopColor1: '#000000',
+    stopColor2: '#000000',
   },
   shadowOpacity: 0.8, // ?
   left: {
-    rx: 23.5,
-    ry: 25,
-    cx: 350,
-    cy: 375,
+    rx: 59,
+    ry: 59,
+    cx: 303,
+    cy: 333,
   },
   right: {
-    rx: 23.5,
-    ry: 25,
-    cx: 450,
-    cy: 375,
+    rx: 59,
+    ry: 59,
+    cx: 521,
+    cy: 333,
   },
 })
 
@@ -263,32 +279,32 @@ const changeEye = (e) => {
 
 // 切换大小
 const handleSize = (e, type: string, nowType) => {
-  // console.log('e_handleRadius', e.target.value)
   if (type == 'head') {
     head.value[nowType] = +e.target.value
   } else if (type == 'eye') {
     eye.value[activeEye.value][nowType] = +e.target.value
   } else if (type == 'mouth') {
-    if (nowType == 'width') {
+    if (nowType == 'size') {
       let _cur = +e.target.value
-      if (mouth.value.width > +e.target.value) {
-        _cur -= mouth.value.width
+      if (mouth.value.size > +e.target.value) {
+        _cur -= mouth.value.size
         mouth.value.path.s += -_cur
-        mouth.value.path.c += -_cur
+        mouth.value.path.c += -_cur - 35
         mouth.value.path.e -= -_cur
         // console.log(`output->缩小`, '缩小', _cur, mouth.value.path)
       } else {
-        _cur -= mouth.value.width
+        _cur -= mouth.value.size
         mouth.value.path.s -= _cur
-        mouth.value.path.c -= _cur
+        mouth.value.path.c -= _cur - 35
         mouth.value.path.e += _cur
         // console.log(`output->变大`, '变大', _cur, mouth.value.path)
       }
-      mouth.value.width = +e.target.value
+      mouth.value.size = +e.target.value
     } else {
       mouth.value[nowType] = +e.target.value
     }
   }
+  console.log(`output->进度条`, type, nowType, +e.target.value)
 }
 
 /**
@@ -303,7 +319,7 @@ const changeColor = (e: string, type: string, colorType) => {
   } else if (type == 'mouth') {
     mouth.value.color[colorType] = e
   }
-  console.log(`output->e`, e)
+  console.log(`output->e`, type, colorType, e)
 }
 
 // 随机生成
@@ -315,10 +331,10 @@ onBeforeMount(() => {
   // randomize()
   const e = {
     target: {
-      value: mouth.value.width,
+      value: mouth.value.size,
     },
   }
-  handleSize(e, 'mouth', 'width')
+  handleSize(e, 'mouth', 'size')
 })
 
 onUnmounted(() => {
@@ -329,7 +345,19 @@ onUnmounted(() => {
 <style lang="scss">
 @import './index.scss';
 
-.v3-c-p.v3-c-p-medium .c-p-t {
-  width: 100px;
+.v3-c-p.v3-c-p-medium {
+  .c-p-t {
+    width: 40px;
+    height: 40px;
+    overflow: hidden;
+    border-radius: 50%;
+  }
+  .c-p-c,
+  .c-p-c-i {
+    border-radius: 50%;
+  }
+  .c-p-c {
+    border: none;
+  }
 }
 </style>

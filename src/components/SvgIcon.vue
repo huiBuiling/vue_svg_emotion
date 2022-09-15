@@ -182,7 +182,7 @@
       <!-- mouth x,y -> d值变化 -->
       <path
         :d="mouthPath"
-        :stroke-width="20"
+        :stroke-width="mouth.width"
         :stroke="mouth.color.baseColor"
         fill="none"
         filter="url(#mouth-shadow)"

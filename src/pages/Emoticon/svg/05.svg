@@ -136,7 +136,7 @@
     <ellipse rx="23.5" ry="25" cx="450" cy="375" fill="url(#eye-light)" filter="url(#inner-blur)"></ellipse>
     <path
       d="M350 512.5Q400 562.5 450 512.5 "
-      stroke-width="20"
+      stroke-width="50"
       stroke="hsl(3, 100%, 51%)"
       fill="none"
       filter="url(#mouth-shadow)"
