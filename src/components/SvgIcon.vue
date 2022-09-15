@@ -226,6 +226,7 @@ const emit = defineEmits<{
 const mouthPath = computed(() => {
   const { s, c, e } = props.mouth.path
   console.log(`output->props`, `M${s} 512.5Q${c} 562.5 ${e} 512.5`)
+  // min: M416 512.5Q466 562.5 366 512.5
   // cen: M350 512.5Q400 562.5 450 512.5
   // max: M250 512.5Q300 562.5 550 512.5
   return `M${s} 512.5Q${c} 562.5 ${e} 512.5`

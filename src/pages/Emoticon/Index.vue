@@ -163,6 +163,8 @@ const minAndMax = computed(() => {
         max = 650
         break
       case 'm_width':
+        // min = 50
+        // max = 400
         min = 0
         max = 200
         break
@@ -262,24 +264,25 @@ const changeEye = (e) => {
 // 切换大小
 const handleSize = (e, type: string, nowType) => {
   // console.log('e_handleRadius', e.target.value)
-
   if (type == 'head') {
     head.value[nowType] = +e.target.value
   } else if (type == 'eye') {
     eye.value[activeEye.value][nowType] = +e.target.value
   } else if (type == 'mouth') {
     if (nowType == 'width') {
-      const _cur = +e.target.value / 2
-      console.log(`output->_cur`, _cur)
+      let _cur = +e.target.value
       if (mouth.value.width > +e.target.value) {
-        debugger
-        mouth.value.path.s += _cur
-        mouth.value.path.c += _cur
-        mouth.value.path.e -= _cur
+        _cur -= mouth.value.width
+        mouth.value.path.s += -_cur
+        mouth.value.path.c += -_cur
+        mouth.value.path.e -= -_cur
+        // console.log(`output->缩小`, '缩小', _cur, mouth.value.path)
       } else {
+        _cur -= mouth.value.width
         mouth.value.path.s -= _cur
         mouth.value.path.c -= _cur
         mouth.value.path.e += _cur
+        // console.log(`output->变大`, '变大', _cur, mouth.value.path)
       }
       mouth.value.width = +e.target.value
     } else {
@@ -310,6 +313,12 @@ const randomize = () => {
 
 onBeforeMount(() => {
   // randomize()
+  const e = {
+    target: {
+      value: mouth.value.width,
+    },
+  }
+  handleSize(e, 'mouth', 'width')
 })
 
 onUnmounted(() => {
