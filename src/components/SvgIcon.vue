@@ -122,28 +122,8 @@
       </filter>
     </defs>
     <g stroke-linecap="round">
-      <!-- head 01 -->
-      <!-- <path :d="head.d" fill="#86a600" opacity="0.25" filter="url(#ccclaymoji-blur)"></path>
-        <path :d="head.d" :fill="head.baseColor"></path>
-        <path :d="head.d" fill="url(#ccclaymoji-grad-dark)"></path>
-        <path :d="head.d" fill="url(#ccclaymoji-grad-light)"></path> -->
-
-      <!-- head 06 -->
-      <!-- 阴影 -->
-      <circle
-        :r="head.r"
-        :cx="head.cx"
-        :cy="head.cy"
-        :fill="head.color.shadowColor"
-        opacity="0.25"
-        filter="url(#ccclaymoji-blur)"
-        transform="translate(-10, 60)"
-      />
-      <!-- translate 浏览器调试记得加px -->
-      <!-- <path :d="head.d" :fill="head.color.shadowColor" opacity="0.25" filter="url(#ccclaymoji-blur)"></path> -->
-      <circle :r="head.r" :cx="head.cx" :cy="head.cy" :fill="head.color.baseColor" />
-      <circle :r="head.r" :cx="head.cx" :cy="head.cy" fill="url(#ccclaymoji-grad-dark)" />
-      <circle :r="head.r" :cx="head.cx" :cy="head.cy" fill="url(#ccclaymoji-grad-light)" />
+      <!-- head -->
+      <HeadCon />
 
       <!-- eye -->
       <ellipse
@@ -200,7 +180,9 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref } from 'vue'
+
+import HeadCon from './HeadCon.vue'
 
 interface VueColorAvatarProps {
   head: any
@@ -231,6 +213,8 @@ const mouthPath = computed(() => {
   // max: M250 512.5Q300 562.5 550 512.5
   return `M${s} 512.5Q${c} 562.5 ${e} 512.5`
 })
+
+const headStyle = ref('one')
 
 /**
  * svg： https://blog.csdn.net/Z_2010317/article/details/125854597

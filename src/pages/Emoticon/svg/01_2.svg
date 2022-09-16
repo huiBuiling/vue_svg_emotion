@@ -79,8 +79,8 @@
         result="dropShadow"
       ></feDropShadow>
     </filter>
-    <linearGradient gradientTransform="rotate(-25)" id="eye-light" x1="50%" y1="0%" x2="50%" y2="100%">
-      <stop offset="20%" stop-color="#555555" stop-opacity="1"></stop>
+    <linearGradient id="eye-light" x1="50%" y1="0%" x2="50%" y2="100%">
+      <stop offset="0%" stop-color="#555555" stop-opacity="1"></stop>
       <stop offset="100%" stop-color="black" stop-opacity="0"></stop>
     </linearGradient>
     <linearGradient id="mouth-light" x1="50%" y1="0%" x2="50%" y2="100%">
@@ -130,10 +130,34 @@
       d="M650 399.99999613096236C650 561.6737853047515 561.6737891737891 635.7549818859482 400 635.7549818859482C238.3269230769231 635.7549818859482 150 561.6737853047515 150 399.99999613096236C150 238.3269192078854 238.3269230769231 164.24501037597656 400 164.24501037597656C561.6737891737891 164.24501037597656 650 238.3269192078854 650 399.99999613096236Z "
       fill="url(#ccclaymoji-grad-light)"
     ></path>
-    <ellipse rx="23.5" ry="25" cx="350" cy="375" fill="black" filter="url(#eye-shadow)"></ellipse>
-    <ellipse rx="23.5" ry="25" cx="350" cy="375" fill="url(#eye-light)" filter="url(#inner-blur)"></ellipse>
-    <ellipse rx="23.5" ry="25" cx="450" cy="375" fill="black" filter="url(#eye-shadow)"></ellipse>
-    <ellipse rx="23.5" ry="25" cx="450" cy="375" fill="url(#eye-light)" filter="url(#inner-blur)"></ellipse>
+    <path
+      d="M325 362.5Q375 412.5 375 362.5 "
+      stroke-width="20"
+      stroke="black"
+      fill="none"
+      filter="url(#eye-shadow)"
+    ></path>
+    <path
+      d="M325 362.5Q375 412.5 375 362.5 "
+      stroke-width="6.666666666666667"
+      stroke="url(#eye-light)"
+      fill="none"
+      filter="url(#inner-blur)"
+    ></path>
+    <path
+      d="M425 362.5Q475 412.5 475 362.5 "
+      stroke-width="20"
+      stroke="black"
+      fill="none"
+      filter="url(#eye-shadow)"
+    ></path>
+    <path
+      d="M425 362.5Q475 412.5 475 362.5 "
+      stroke-width="6.666666666666667"
+      stroke="url(#eye-light)"
+      fill="none"
+      filter="url(#inner-blur)"
+    ></path>
     <path
       d="M350 512.5Q400 562.5 450 512.5 "
       stroke-width="20"

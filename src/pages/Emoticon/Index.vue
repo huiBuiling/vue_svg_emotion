@@ -9,6 +9,24 @@
 
     <!-- 可视化块 -->
     <div class="right">
+      <div class="view">
+        <div class="t_title">样式</div>
+        <!-- 左眼，右眼 -->
+        <div
+          v-for="item in [
+            { name: '样式1', id: 'style1' },
+            { name: '样式2', id: 'style2' },
+          ]"
+          :key="item.id"
+          class="radio checked"
+          @change="changeEye(item.id)"
+        >
+          <input :id="item.id" v-model="activeStyle" :value="item.id" name="radio_style" type="radio" />
+          <label :for="item.id" :data-text="item.name"></label>
+          <div class="radio__icon"></div>
+        </div>
+      </div>
+
       <!-- head -->
       <div class="view">
         <div class="t_title">头部</div>
@@ -129,6 +147,8 @@ import { computed, onBeforeMount, onUnmounted, reactive, ref, watch } from 'vue'
 
 import SvgIcon from '@/components/SvgIcon.vue'
 
+const activeStyle = ref('style1')
+
 // 文案对应
 const typeText = {
   baseColor: '背景色',
@@ -204,7 +224,7 @@ const head = ref({
     baseColor: '#FDC855',
     shadowColor: '#FA0941',
     stopColor1: '#E45392',
-    stopColor2: '#EB6367',
+    stopColor2: '#EBE8E8', // '#EB6367'
   },
   r: 350,
   cx: 400,
