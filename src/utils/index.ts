@@ -51,7 +51,101 @@ const getLightenDarkenColor = (col, amt) => {
   return (usePound ? '#' : '') + (g | (b << 8) | (r << 16)).toString(16)
 }
 
-export { getLightenDarkenColor, hexToRgb }
+const colors = [
+  'hsl(44, 100%, 80%)',
+  'hsl(50, 65%, 76%)',
+  'hsl(24, 82%, 75%)',
+  'hsl(41, 100%, 67%)',
+  'hsl(50, 98%, 50%)',
+  'hsl(30, 100%, 40%)',
+  'hsl(70, 69%, 50%)',
+
+  'hsl(158, 49%, 67%)',
+  'hsl(215, 38%, 57%)',
+  'hsl(205, 69%, 50%)',
+  'hsl(230, 53%, 57%)',
+  'hsl(354, 86%, 57%)',
+  // 'hsl(10, 75%, 40%)',
+  'hsl(180, 1%, 30%)',
+  'hsl(305, 77%, 40%)',
+
+  'hsl(335, 77%, 50%)',
+  'hsl(341, 100%, 85%)',
+  'hsl(115, 100%, 84%)',
+  'hsl(166, 100%, 73%)',
+  'hsl(205, 100%, 80%)',
+  'hsl(265, 100%, 81%)',
+  'hsl(351, 100%, 67%)',
+]
+
+// 文案对应
+const typeText = {
+  baseColor: '背景色',
+  shadowColor: '阴影色',
+  stopColor1: '右下侧色',
+  stopColor2: '左上侧色',
+  lightColor: '灯光色1',
+  lightColor2: '灯光色2',
+  rx: '尺寸 X',
+  ry: '尺寸 Y',
+  cx: '位置 X',
+  cy: '位置 Y',
+  size: '大小',
+  width: '嘴厚',
+  lightWidth: '光宽',
+}
+
+// 眼睛可设置的最大最小值
+const minAndMax = (type) => {
+  let min = 0
+  let max = 10
+  switch (type) {
+    case 'rx':
+      min = 10
+      max = 200
+      break
+    case 'ry':
+      min = 5
+      max = 200
+      break
+    case 'cx':
+      // min 太大，导致样式有些许不准确
+      min = 30
+      max = 650
+      break
+    case 'cy':
+      min = 30
+      max = 650
+      break
+    case 'm_size':
+      // min = 50
+      // max = 400
+      min = 0
+      max = 200
+      break
+    case 'm_width':
+      min = 0
+      max = 50
+      break
+    // case 'm_light':
+    //   min = 30
+    //   max = 400
+    //   break
+
+    default:
+      break
+  }
+  return { min, max }
+}
+
+// 进度条比例
+const percent = (cur: number, data: { min: number; max: number }) => {
+  const _cur = data.max
+  const val = ((cur / _cur) * 100).toFixed(2)
+  return `${Math.floor(+val)}%`
+}
+
+export { colors, getLightenDarkenColor, minAndMax, percent, typeText }
 
 /**
  * #194199(hsl(221, 72%, 35%)

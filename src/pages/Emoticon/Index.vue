@@ -35,7 +35,7 @@
           ]"
           :key="item.id"
           class="radio checked"
-          @change="changeCustomHead(item.id)"
+          @change="changeCustom(item.id, 'eye')"
         >
           <input :id="item.id" v-model="isCustomHead" :value="item.id" name="customHead" type="radio" />
           <label :for="item.id" :data-text="item.name"></label>
@@ -131,7 +131,7 @@
           ]"
           :key="item.id"
           class="radio checked"
-          @change="changeCustomEye(item.id)"
+          @change="changeCustom(item.id, 'eye')"
         >
           <!-- id和其他radio组的重复，则改变事件会失效 -->
           <input :id="item.id" v-model="isCustomEye" :value="item.id" name="customEye" type="radio" />
@@ -199,126 +199,25 @@
 <script setup lang="ts">
 import html2canvas from 'html2canvas'
 import { V3ColorPicker } from 'v3-color-picker'
-import { computed, onBeforeMount, onUnmounted, ref } from 'vue'
+import { onBeforeMount, onUnmounted, ref } from 'vue'
 
 import SvgIcon from '@/components/SvgIcon.vue'
-import { getLightenDarkenColor } from '@/utils/index'
-
-// 预选颜色列表
-const colors = [
-  'hsl(44, 100%, 80%)',
-  'hsl(50, 65%, 76%)',
-  'hsl(24, 82%, 75%)',
-  'hsl(41, 100%, 67%)',
-  'hsl(50, 98%, 50%)',
-  'hsl(30, 100%, 40%)',
-  'hsl(70, 69%, 50%)',
-
-  'hsl(158, 49%, 67%)',
-
-  'hsl(215, 38%, 57%)',
-  'hsl(205, 69%, 50%)',
-  'hsl(230, 53%, 57%)',
-  'hsl(354, 86%, 57%)',
-  'hsl(10, 75%, 40%)',
-  'hsl(305, 77%, 40%)',
-  'hsl(335, 77%, 50%)',
-  'hsl(341, 100%, 85%)',
-
-  'hsl(115, 100%, 84%)',
-  'hsl(166, 100%, 73%)',
-  'hsl(205, 100%, 80%)',
-  'hsl(265, 100%, 81%)',
-  'hsl(351, 100%, 67%)',
-]
-
-// 文案对应
-const typeText = {
-  baseColor: '背景色',
-  shadowColor: '阴影色',
-  stopColor1: '右下侧色',
-  stopColor2: '左上侧色',
-  lightColor: '灯光色1',
-  lightColor2: '灯光色2',
-  rx: '尺寸 X',
-  ry: '尺寸 Y',
-  cx: '位置 X',
-  cy: '位置 Y',
-  size: '大小',
-  width: '嘴厚',
-  lightWidth: '光宽',
-}
-
-// 眼睛可设置的最大最小值
-const minAndMax = computed(() => {
-  return function (type: string) {
-    let min = 0
-    let max = 10
-    switch (type) {
-      case 'rx':
-        min = 10
-        max = 200
-        break
-      case 'ry':
-        min = 5
-        max = 200
-        break
-      case 'cx':
-        // min 太大，导致样式有些许不准确
-        min = 30
-        max = 650
-        break
-      case 'cy':
-        min = 30
-        max = 650
-        break
-      case 'm_size':
-        // min = 50
-        // max = 400
-        min = 0
-        max = 200
-        break
-      case 'm_width':
-        min = 0
-        max = 50
-        break
-      // case 'm_light':
-      //   min = 30
-      //   max = 400
-      //   break
-
-      default:
-        break
-    }
-    return { min, max }
-  }
-})
-
-// 进度条比例
-const percent = (cur: number, data: { min: number; max: number }) => {
-  //  - data.min
-  const _cur = data.max
-  const val = ((cur / _cur) * 100).toFixed(2)
-  return `${Math.floor(+val)}%`
-}
+import { colors, getLightenDarkenColor, minAndMax, percent, typeText } from '@/utils/index'
 
 const tips = () => {
   alert('开发中...')
 }
 
 const isCustomHead = ref('no')
-const changeCustomHead = (e) => {
-  if (e == 'no') {
-    // alert('已配置色不会更改且关闭自定义配色选项')
-    const _curBaseColor = head.value.color.baseColor
-    head.value.color = {
-      baseColor: _curBaseColor,
-      stopColor1: getLightenDarkenColor(_curBaseColor, -54),
-      stopColor2: getLightenDarkenColor(_curBaseColor, +50),
-    }
+const isCustomEye = ref('eye_no')
+const changeCustom = (e, type) => {
+  if (type == 'head') {
+    isCustomHead.value = e
+    e == 'no' && changeColor(head.value.color.baseColor, 'head')
+  } else {
+    isCustomEye.value = e
+    e == 'eye_no' && changeColor('#000000', 'eye')
   }
-  console.log(`output->changeCustomHead`, e)
-  isCustomHead.value = e
 }
 
 const activeHeadSty = ref('Head01')
@@ -330,11 +229,8 @@ const head = ref({
   // 切换头部样式，其他颜色跟随基础色
   color: {
     baseColor: '#FDC855', // FFB3CB
-    // shadowColor: '#FA0941',
     stopColor1: getLightenDarkenColor('#FDC855', -54),
     stopColor2: getLightenDarkenColor('#FDC855', +50),
-    // stopColor1: '#ECAC1F', // 'E45392'
-    // stopColor2: '#EBE8E8', // '#EB6367', 'EBE8E8'
   },
   r: 250,
   cx: 400,
@@ -368,26 +264,10 @@ const mouth = ref({
   positionY: 0,
 })
 
-const isCustomEye = ref('eye_no')
-const changeCustomEye = (e) => {
-  if (e == 'eye_no') {
-    // alert('已配置色不会更改且关闭自定义配色选项')
-    const _curBaseColor = eye.value.color.baseColor
-    eye.value.color = {
-      baseColor: _curBaseColor,
-      stopColor1: getLightenDarkenColor(_curBaseColor, -54),
-      stopColor2: getLightenDarkenColor(_curBaseColor, +50),
-    }
-  }
-  console.log(`output->changeCustomEye`, e)
-  isCustomEye.value = e
-}
-
 // 左右眼: 颜色， 尺寸x,y，位置x,y， 类型
 const eye = ref({
   color: {
     baseColor: '#000000', //'rgb(252, 246, 242)', 'rgba(105,103,254, 0.5)'
-    // shadowColor: '#000000',
     stopColor1: '#555555',
     stopColor2: '#000000',
   },
@@ -405,6 +285,8 @@ const eye = ref({
     cy: 357,
   },
 })
+
+console.log(`output->eye_color`, eye.value.color)
 
 // 切换左右眼
 const activeEye = ref('left')
@@ -448,9 +330,10 @@ const handleSize = (e, type: string, nowType) => {
  * 切换颜色 ->
  * 会伴随randomize方法执行，因为依赖 colorsSetting
  */
-const changeColor = (e: string, type: string, colorType) => {
+const changeColor = (e: string, type: string, colorType?) => {
   if (type == 'head') {
     if (isCustomHead.value == 'no') {
+      console.log(`output->head_no`, e)
       head.value.color = {
         baseColor: e,
         stopColor1: getLightenDarkenColor(e, -54),
@@ -460,11 +343,12 @@ const changeColor = (e: string, type: string, colorType) => {
       head.value.color[colorType] = e
     }
   } else if (type == 'eye') {
-    if (isCustomHead.value == 'eye_no') {
+    if (isCustomEye.value == 'eye_no') {
+      console.log(`output->eye_no`, e)
       eye.value.color = {
         baseColor: e,
         stopColor1: '#555555',
-        stopColor2: '#000000',
+        stopColor2: e,
       }
     } else {
       eye.value.color[colorType] = e
@@ -472,7 +356,6 @@ const changeColor = (e: string, type: string, colorType) => {
   } else if (type == 'mouth') {
     mouth.value.color[colorType] = e
   }
-  console.log(`output->e`, type, colorType, e)
 }
 
 const downloading = ref(false)
@@ -500,7 +383,11 @@ async function handleDownload() {
   }
 }
 
-// 随机生成
+/**
+ * 随机生成
+ * head: color, style
+ * eye: size
+ */
 const randomize = () => {
   console.log(`output->111`, 111)
 }
