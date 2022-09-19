@@ -391,13 +391,10 @@ const copySvg = async () => {
 const setSvgData = () => {
   const _cur = document.getElementsByTagName('svg')[0]
   svgData.value = _cur?.outerHTML
-  console.log(`output->JSON.stringify(svgData)`)
 }
 
 /**
  * 随机生成
- * head: head.color.baseColor, activeHeadSty
- * eye: size
  */
 const randomize = () => {
   const _headColorIndex = Math.floor(Math.random() * colors.length)
@@ -405,6 +402,14 @@ const randomize = () => {
 
   const _headStyIndex = Math.floor(Math.random() * styles.length)
   activeHeadSty.value = styles[_headStyIndex].id
+
+  // 眼睛大小
+  /**
+   * 眼睛大小
+   * 1. 一起缩放
+   * 2. 左眼 + 右眼
+   * 3. 位置偏移，建议一次一边即可
+   */
 }
 
 onBeforeMount(() => {
