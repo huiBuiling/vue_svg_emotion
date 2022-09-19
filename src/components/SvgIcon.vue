@@ -142,7 +142,7 @@
     </defs>
     <g stroke-linecap="round">
       <!-- head -->
-      <HeadCon :data="head" :type="activeHeadSty" :size="'0.5'" />
+      <HeadCon :data="head" :type="activeHeadSty" />
 
       <!-- eye -->
       <g v-for="item in ['left', 'right']" :key="item">

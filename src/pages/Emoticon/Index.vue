@@ -2,7 +2,7 @@
   <div class="home">
     <div class="home_line"></div>
     <div class="center">
-      <div class="icon_con">
+      <div ref="emoticonRef" class="icon_con">
         <SvgIcon
           :head="head"
           :mouth="mouth"
@@ -12,6 +12,13 @@
           :is-custom-eye="isCustomEye"
           @change="tips()"
         />
+      </div>
+
+      <!-- btn_group -->
+      <div class="btn_group">
+        <button class="btn_i btn_1" @click="tips">随机生成</button>
+        <button class="btn_i btn_2" :disabled="downloading" @click="handleDownload">下载头像</button>
+        <button class="btn_i btn_3" @click="tips">批量生成</button>
       </div>
     </div>
 
@@ -190,8 +197,9 @@
 </template>
 
 <script setup lang="ts">
+import html2canvas from 'html2canvas'
 import { V3ColorPicker } from 'v3-color-picker'
-import { computed, onBeforeMount, onUnmounted, reactive, ref, watch } from 'vue'
+import { computed, onBeforeMount, onUnmounted, ref } from 'vue'
 
 import SvgIcon from '@/components/SvgIcon.vue'
 import { getLightenDarkenColor } from '@/utils/index'
@@ -465,6 +473,31 @@ const changeColor = (e: string, type: string, colorType) => {
     mouth.value.color[colorType] = e
   }
   console.log(`output->e`, type, colorType, e)
+}
+
+const downloading = ref(false)
+const emoticonRef = ref(null)
+// 下载图片
+async function handleDownload() {
+  console.log(`output->handleDownload`)
+  try {
+    downloading.value = true
+    const avatarEle = emoticonRef.value
+    if (avatarEle) {
+      const canvas = await html2canvas(avatarEle, {
+        backgroundColor: null,
+      })
+      const dataURL = canvas.toDataURL()
+      const trigger = document.createElement('a')
+      trigger.href = dataURL
+      trigger.download = 'avatar.png'
+      trigger.click()
+    }
+  } finally {
+    setTimeout(() => {
+      downloading.value = false
+    }, 800)
+  }
 }
 
 // 随机生成
