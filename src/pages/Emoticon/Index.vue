@@ -3,25 +3,47 @@
     <div class="home_line"></div>
     <div class="center">
       <div class="icon_con">
-        <SvgIcon :head="head" :mouth="mouth" :eye="eye" @change="tips()" />
+        <SvgIcon
+          :head="head"
+          :mouth="mouth"
+          :eye="eye"
+          :active-head-sty="activeHeadSty"
+          :is-custom="isCustom"
+          @change="tips()"
+        />
       </div>
     </div>
 
     <!-- 可视化块 -->
     <div class="right">
       <div class="view">
-        <div class="t_title">样式</div>
-        <!-- 左眼，右眼 -->
+        <div class="t_title">是否开启头部自定义配色</div>
         <div
           v-for="item in [
-            { name: '样式1', id: 'style1' },
-            { name: '样式2', id: 'style2' },
+            { name: '是', id: 'ok' },
+            { name: '否', id: 'no' },
           ]"
           :key="item.id"
           class="radio checked"
-          @change="changeEye(item.id)"
+          @change="changeCustom(item.id)"
         >
-          <input :id="item.id" v-model="activeStyle" :value="item.id" name="radio_style" type="radio" />
+          <input :id="item.id" v-model="isCustom" :value="item.id" name="custom" type="radio" />
+          <label :for="item.id" :data-text="item.name"></label>
+          <div class="radio__icon"></div>
+        </div>
+
+        <div class="t_title">样式</div>
+        <div
+          v-for="item in [
+            { name: '样式1', id: 'Head01' },
+            { name: '样式2', id: 'Head02' },
+            { name: '样式6', id: 'Head06' },
+          ]"
+          :key="item.id"
+          class="radio checked"
+          @change="changeHead(item.id)"
+        >
+          <input :id="item.id" v-model="activeHeadSty" :value="item.id" name="radio_style" type="radio" />
           <label :for="item.id" :data-text="item.name"></label>
           <div class="radio__icon"></div>
         </div>
@@ -44,7 +66,11 @@
         </div>
 
         <div class="t_color_con">
-          <div v-for="item in Object.keys(head.color)" :key="item" class="t_color">
+          <div
+            v-for="item in Object.keys(isCustom == 'no' ? { baseColor: head.color.baseColor } : head.color)"
+            :key="item"
+            class="t_color"
+          >
             <!-- 默认是哪种类型颜色就会输出对应类型颜色 -->
             <v3-color-picker
               btn
@@ -146,8 +172,7 @@ import { V3ColorPicker } from 'v3-color-picker'
 import { computed, onBeforeMount, onUnmounted, reactive, ref, watch } from 'vue'
 
 import SvgIcon from '@/components/SvgIcon.vue'
-
-const activeStyle = ref('style1')
+import { getLightenDarkenColor } from '@/utils/index'
 
 // 文案对应
 const typeText = {
@@ -219,17 +244,28 @@ const percent = (cur: number, data: { min: number; max: number }) => {
   return `${Math.floor(+val)}%`
 }
 
+const isCustom = ref('no')
+const changeCustom = (e) => {
+  if (e == 'no') {
+    alert('已配置色不会更改且关闭自定义配色选项')
+  }
+  console.log(`output->changeCustom`, e)
+  isCustom.value = e
+}
 const head = ref({
+  // 切换头部样式，其他颜色跟随基础色
   color: {
-    baseColor: '#FDC855',
-    shadowColor: '#FA0941',
-    stopColor1: '#E45392',
-    stopColor2: '#EBE8E8', // '#EB6367'
+    baseColor: '#FDC855', // FFB3CB
+    // shadowColor: '#FA0941',
+    stopColor1: getLightenDarkenColor('#FDC855', -54),
+    stopColor2: getLightenDarkenColor('#FDC855', +50),
+    // stopColor1: '#ECAC1F', // 'E45392'
+    // stopColor2: '#EBE8E8', // '#EB6367', 'EBE8E8'
   },
-  r: 350,
+  r: 250,
   cx: 400,
   cy: 400,
-  maxW: 350,
+  maxW: 250,
 })
 
 const mouth = ref({
@@ -273,21 +309,26 @@ const eye = ref({
   },
   shadowOpacity: 0.8, // ?
   left: {
-    rx: 59,
-    ry: 59,
-    cx: 303,
-    cy: 333,
+    rx: 39,
+    ry: 39,
+    cx: 318,
+    cy: 357,
   },
   right: {
-    rx: 59,
-    ry: 59,
-    cx: 521,
-    cy: 333,
+    rx: 39,
+    ry: 39,
+    cx: 482,
+    cy: 357,
   },
 })
 
 const tips = () => {
   alert('开发中...')
+}
+
+const activeHeadSty = ref('Head06')
+const changeHead = (e) => {
+  console.log(`output->changeHead`, e)
 }
 
 // 切换左右眼

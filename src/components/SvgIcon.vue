@@ -8,13 +8,22 @@
   >
     <!-- @click="emit('change')" -->
     <defs>
-      <!-- 放射渐变(径向渐变) -->
+      <!-- head 右下侧 放射渐变(径向渐变) -->
       <radialGradient id="ccclaymoji-grad-dark" r="93%" cx="20%" cy="20%">
         <stop offset="70%" :stop-color="head.color.baseColor" stop-opacity="0"></stop>
-        <stop offset="97%" :stop-color="head.color.stopColor1" stop-opacity="1"></stop>
+        <stop
+          offset="97%"
+          :stop-color="!isCustom ? getLightenDarkenColor(head.color.baseColor, -54) : head.color.stopColor1"
+          stop-opacity="1"
+        ></stop>
       </radialGradient>
+      <!-- head 左上侧 -->
       <radialGradient id="ccclaymoji-grad-light" r="65%" cx="28%" cy="20%">
-        <stop offset="0%" :stop-color="head.color.stopColor2" stop-opacity="0.75"></stop>
+        <stop
+          offset="0%"
+          :stop-color="!isCustom ? getLightenDarkenColor(head.color.baseColor, +50) : head.color.stopColor2"
+          stop-opacity="0.75"
+        ></stop>
         <stop offset="100%" :stop-color="head.color.baseColor" stop-opacity="0"></stop>
       </radialGradient>
       <!-- head -->
@@ -123,7 +132,7 @@
     </defs>
     <g stroke-linecap="round">
       <!-- head -->
-      <HeadCon />
+      <HeadCon :data="head" :type="activeHeadSty" />
 
       <!-- eye -->
       <ellipse
@@ -182,19 +191,27 @@
 <script setup lang="ts">
 import { computed, ref } from 'vue'
 
+import { getLightenDarkenColor } from '@/utils/index'
+
 import HeadCon from './HeadCon.vue'
 
 interface VueColorAvatarProps {
   head: any
   mouth: any
   eye: any
+  activeHeadSty: string
+  isCustom: string | 'ok' | 'no'
 }
 
 const props = withDefaults(defineProps<VueColorAvatarProps>(), {
   head: {},
   mouth: {},
   eye: {},
+  activeHeadSty: 'Head01',
+  isCustom: 'no',
 })
+
+console.log(`output->svgCon`, props)
 
 const emit = defineEmits<{
   (e: 'change'): void
@@ -207,14 +224,14 @@ const emit = defineEmits<{
 // 嘴巴：颜色，类型，宽度，倾斜度，微笑/皱眉，旋转，x,y
 const mouthPath = computed(() => {
   const { s, c, e } = props.mouth.path
-  console.log(`output->props`, `M${s} 512.5Q${c} 562.5 ${e} 512.5`)
+  console.log(`output->mouthPath`, `M${s} 512.5Q${c} 562.5 ${e} 512.5`)
   // min: M416 512.5Q466 562.5 366 512.5
   // cen: M350 512.5Q400 562.5 450 512.5
   // max: M250 512.5Q300 562.5 550 512.5
   return `M${s} 512.5Q${c} 562.5 ${e} 512.5`
 })
 
-const headStyle = ref('one')
+// const headStyle = ref('Head01')
 
 /**
  * svg： https://blog.csdn.net/Z_2010317/article/details/125854597

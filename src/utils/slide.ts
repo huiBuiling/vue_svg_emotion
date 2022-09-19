@@ -1,18 +1,6 @@
 import { AvatarType } from './shapeEnum'
 
-const types = [
-  'face',
-  'tops',
-  'ear',
-  'earrings',
-  'eyebrows',
-  'eyes',
-  'nose',
-  'glasses',
-  'mouth',
-  'beard',
-  'clothes',
-]
+const types = ['face', 'tops', 'ear', 'earrings', 'eyebrows', 'eyes', 'nose', 'glasses', 'mouth', 'beard', 'clothes']
 
 // 可视化侧边栏数据
 const slideJson: Readonly<
