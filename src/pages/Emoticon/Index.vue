@@ -16,7 +16,7 @@
 
       <!-- btn_group -->
       <div class="btn_group">
-        <button class="btn_i btn_1" @click="tips">随机生成</button>
+        <button class="btn_i btn_1" @click="randomize">随机生成</button>
         <button class="btn_i btn_2" :disabled="downloading" @click="handleDownload">下载头像</button>
         <button class="btn_i btn_3" @click="tips">批量生成</button>
       </div>
@@ -43,17 +43,7 @@
         </div>
         <!-- 样式 -->
         <br />
-        <div
-          v-for="item in [
-            { name: '样式1', id: 'Head01' },
-            { name: '样式2', id: 'Head02' },
-            { name: '样式3', id: 'Head03' },
-            { name: '样式4', id: 'Head06' },
-          ]"
-          :key="item.id"
-          class="radio checked"
-          @change="changeHead(item.id)"
-        >
+        <div v-for="item in styles" :key="item.id" class="radio checked" @change="changeHead(item.id)">
           <input :id="item.id" v-model="activeHeadSty" :value="item.id" name="radio_style" type="radio" />
           <label :for="item.id" :data-text="item.name"></label>
           <div class="radio__icon"></div>
@@ -202,7 +192,7 @@ import { V3ColorPicker } from 'v3-color-picker'
 import { onBeforeMount, onUnmounted, ref } from 'vue'
 
 import SvgIcon from '@/components/SvgIcon.vue'
-import { colors, getLightenDarkenColor, minAndMax, percent, typeText } from '@/utils/index'
+import { colors, getLightenDarkenColor, minAndMax, percent, styles, typeText } from '@/utils/index'
 
 const tips = () => {
   alert('开发中...')
@@ -220,9 +210,17 @@ const changeCustom = (e, type) => {
   }
 }
 
+// 切换头部样式
 const activeHeadSty = ref('Head01')
 const changeHead = (e) => {
   activeHeadSty.value = e
+}
+
+// 切换左右眼
+const activeEye = ref('left')
+const changeEye = (e) => {
+  console.log(`output->e`, e, eye[e])
+  activeEye.value = e
 }
 
 const head = ref({
@@ -286,15 +284,6 @@ const eye = ref({
   },
 })
 
-console.log(`output->eye_color`, eye.value.color)
-
-// 切换左右眼
-const activeEye = ref('left')
-const changeEye = (e) => {
-  console.log(`output->e`, e, eye[e])
-  activeEye.value = e
-}
-
 // 切换大小
 const handleSize = (e, type: string, nowType) => {
   if (type == 'head') {
@@ -328,12 +317,12 @@ const handleSize = (e, type: string, nowType) => {
 
 /**
  * 切换颜色 ->
- * 会伴随randomize方法执行，因为依赖 colorsSetting
  */
 const changeColor = (e: string, type: string, colorType?) => {
   if (type == 'head') {
+    if (head.value.color.baseColor == e) return
+
     if (isCustomHead.value == 'no') {
-      console.log(`output->head_no`, e)
       head.value.color = {
         baseColor: e,
         stopColor1: getLightenDarkenColor(e, -54),
@@ -385,21 +374,25 @@ async function handleDownload() {
 
 /**
  * 随机生成
- * head: color, style
+ * head: head.color.baseColor, activeHeadSty
  * eye: size
  */
 const randomize = () => {
-  console.log(`output->111`, 111)
+  const _headColorIndex = Math.floor(Math.random() * colors.length)
+  changeColor(colors[_headColorIndex], 'head')
+
+  const _headStyIndex = Math.floor(Math.random() * styles.length)
+  activeHeadSty.value = styles[_headStyIndex].id
 }
 
 onBeforeMount(() => {
   // randomize()
-  const e = {
-    target: {
-      value: mouth.value.size,
-    },
-  }
-  handleSize(e, 'mouth', 'size')
+  // const e = {
+  //   target: {
+  //     value: mouth.value.size,
+  //   },
+  // }
+  // handleSize(e, 'mouth', 'size')
 })
 
 onUnmounted(() => {

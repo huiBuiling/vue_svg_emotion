@@ -1,30 +1,10 @@
-const hexToRgb = (hex) => {
-  const result = /^#?([a-f\d]{2})([a-f\d]{2})([a-f\d]{2})$/i.exec(hex)
-  return result
-    ? {
-        r: parseInt(result[1], 16),
-        g: parseInt(result[2], 16),
-        b: parseInt(result[3], 16),
-      }
-    : null
-}
-
-const getLightenDarkenColor_1 = (col, amt) => {
-  const result: {
-    r: number
-    g: number
-    b: number
-  } = hexToRgb(col) || {
-    r: 250,
-    g: 250,
-    b: 250,
-  }
-
-  return `rgba(${result.r + amt},${result.g + amt},${result.b + amt})`
-}
-
+// 处理颜色变浅或变深
 const getLightenDarkenColor = (col, amt) => {
   let usePound = false
+
+  if (col.includes('hsl')) {
+    col = dealHsl(col)
+  }
 
   if (col[0] == '#') {
     col = col.slice(1)
@@ -51,6 +31,86 @@ const getLightenDarkenColor = (col, amt) => {
   return (usePound ? '#' : '') + (g | (b << 8) | (r << 16)).toString(16)
 }
 
+// 处理hsl格式转rgb
+// function hslToRgb(h, s, l) {
+//   let r, g, b
+
+//   if (s == 0) {
+//     r = g = b = l // achromatic
+//   } else {
+//     const hue2rgb = function hue2rgb(p, q, t) {
+//       if (t < 0) t += 1
+//       if (t > 1) t -= 1
+//       if (t < 1 / 6) return p + (q - p) * 6 * t
+//       if (t < 1 / 2) return q
+//       if (t < 2 / 3) return p + (q - p) * (2 / 3 - t) * 6
+//       return p
+//     }
+
+//     const q = l < 0.5 ? l * (1 + s) : l + s - l * s
+//     const p = 2 * l - q
+//     r = hue2rgb(p, q, h + 1 / 3)
+//     g = hue2rgb(p, q, h)
+//     b = hue2rgb(p, q, h - 1 / 3)
+//   }
+
+//   return [Math.round(r * 255), Math.round(g * 255), Math.round(b * 255)]
+// }
+// const rgb = hsl2rgb(1, 0.6, 0.5)
+// const int = rgb[0] * 255 * 255 + rgb[1] * 255 + rgb[2]
+// const fillStyle = '#' + int.toString(16)
+// console.log('fillStyle', fillStyle)
+
+// 处理hsl格式转rgb
+// oneliner version
+const hsl2rgb = (
+  h,
+  s,
+  l,
+  a = s * Math.min(l, 1 - l),
+  f = (n, k = (n + h / 30) % 12) => l - a * Math.max(Math.min(k - 3, 9 - k, 1), -1)
+) => [f(0), f(8), f(4)]
+
+// r,g,b are in [0-1], result e.g. #0812fa.
+// r: number, g: number, b: number
+const rgb2hex = (r: number, g: number, b: number) =>
+  '#' +
+  [r, g, b]
+    .map((x) =>
+      Math.round(x * 255)
+        .toString(16)
+        .padStart(2, 0)
+    )
+    .join('')
+
+// const a = hsl2rgb(30, 0.2, 0.3) // 转rgb
+// const b = rgb2hex(...hsl2rgb(30, 0.2, 0.3)) // 转hex
+// console.log(`hsl: (30,0.2,0.3) --> rgb: (${a}) --> hex: ${b}`)
+
+/**
+ *  处理内容 -> // 匹配括号中的内容（不包含括号） /(?<=\()(.+?)(?=\))/g
+ * @param data 
+ *  (?<=exp)是以exp开头的字符串, 但不包含本身.
+    (?=exp)就匹配为exp结尾的字符串, 但不包含本身.
+    (?<=() 也就是以括号开头, 但不包含括号.
+    (?=)) 就是以括号结尾
+ */
+const dealHsl = (data) => {
+  data = data.match(/(?<=\()(.+?)(?=\))/g)[0].split(', ')
+  data[1] = ((data[1].replace('%', '') * 100) / 10000).toFixed(2)
+  data[2] = ((data[2].replace('%', '') * 100) / 10000).toFixed(2)
+
+  const hslData = hsl2rgb(...data)
+  return rgb2hex(...hslData)
+}
+// console.log(`output->dealHsl()`, dealHsl('hsl(44, 100%, 80%)'))
+
+const styles = [
+  { name: '样式1', id: 'Head01' },
+  { name: '样式2', id: 'Head02' },
+  { name: '样式3', id: 'Head03' },
+  { name: '样式4', id: 'Head06' },
+]
 const colors = [
   'hsl(44, 100%, 80%)',
   'hsl(50, 65%, 76%)',
@@ -145,7 +205,7 @@ const percent = (cur: number, data: { min: number; max: number }) => {
   return `${Math.floor(+val)}%`
 }
 
-export { colors, getLightenDarkenColor, minAndMax, percent, typeText }
+export { colors, dealHsl, getLightenDarkenColor, minAndMax, percent, styles, typeText }
 
 /**
  * #194199(hsl(221, 72%, 35%)

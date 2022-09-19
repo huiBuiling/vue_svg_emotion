@@ -101,3 +101,5 @@ const minAndMax = computed(() => {
 
   - Component name "Head" should always be multi-word.
     - 文件名问题: head.vue -> HeadCon.vue 即可
+
+- ts: 扩张参数必须具有元组类型或传递给 rest 参数
