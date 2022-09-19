@@ -18,13 +18,7 @@
       <div class="btn_group">
         <button class="btn_i btn_1" @click="randomize">随机生成</button>
         <button class="btn_i btn_2" :disabled="downloading" @click="handleDownload">下载头像</button>
-        <button
-          id="copy-svg"
-          class="btn_i btn_3"
-          :disabled="isCopying"
-          :data-clipboard-text="JSON.stringify(svgData)"
-          @click="copySvg"
-        >
+        <button id="copy-svg" class="btn_i btn_3" :disabled="isCopying" :data-clipboard-text="svgData" @click="copySvg">
           copy svg
         </button>
       </div>
@@ -198,7 +192,7 @@
 import Clipboard from 'clipboard'
 import html2canvas from 'html2canvas'
 import { V3ColorPicker } from 'v3-color-picker'
-import { onBeforeMount, onMounted, onUnmounted, ref } from 'vue'
+import { onBeforeMount, onMounted, onUnmounted, onUpdated, ref, watch, watchEffect } from 'vue'
 
 import SvgIcon from '@/components/SvgIcon.vue'
 import { colors, getLightenDarkenColor, minAndMax, percent, styles, typeText } from '@/utils/index'
@@ -394,6 +388,12 @@ const copySvg = async () => {
   })
 }
 
+const setSvgData = () => {
+  const _cur = document.getElementsByTagName('svg')[0]
+  svgData.value = _cur?.outerHTML
+  console.log(`output->JSON.stringify(svgData)`)
+}
+
 /**
  * 随机生成
  * head: head.color.baseColor, activeHeadSty
@@ -418,9 +418,22 @@ onBeforeMount(() => {
 })
 
 onMounted(() => {
-  const _cur = document.getElementsByTagName('svg')[0]
-  svgData.value = _cur
-  console.log(`output->JSON.stringify(svgData)`, JSON.stringify(svgData))
+  setSvgData()
+})
+
+// watch(
+//   [activeHeadSty, head],
+//   async () => {
+//     setSvgData()
+//     console.log('watch', activeHeadSty)
+//   },
+//   //深度监听
+//   { deep: true }
+//   { immediate: true }
+// )
+
+onUpdated(() => {
+  setSvgData()
 })
 
 onUnmounted(() => {
