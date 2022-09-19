@@ -13,7 +13,7 @@
         <stop offset="70%" :stop-color="head.color.baseColor" stop-opacity="0"></stop>
         <stop
           offset="97%"
-          :stop-color="!isCustom ? getLightenDarkenColor(head.color.baseColor, -54) : head.color.stopColor1"
+          :stop-color="isCustomHead == 'no' ? getLightenDarkenColor(head.color.baseColor, -54) : head.color.stopColor1"
           stop-opacity="1"
         ></stop>
       </radialGradient>
@@ -21,7 +21,7 @@
       <radialGradient id="ccclaymoji-grad-light" r="65%" cx="28%" cy="20%">
         <stop
           offset="0%"
-          :stop-color="!isCustom ? getLightenDarkenColor(head.color.baseColor, +50) : head.color.stopColor2"
+          :stop-color="isCustomHead == 'no' ? getLightenDarkenColor(head.color.baseColor, +50) : head.color.stopColor2"
           stop-opacity="0.75"
         ></stop>
         <stop offset="100%" :stop-color="head.color.baseColor" stop-opacity="0"></stop>
@@ -69,6 +69,7 @@
           result="blur"
         ></feGaussianBlur>
       </filter>
+
       <!-- 眼睛阴影 -->
       <filter
         id="eye-shadow"
@@ -84,7 +85,7 @@
           stdDeviation="10"
           dx="10"
           dy="10"
-          :flood-color="eye.shadowColor"
+          :flood-color="eye.color.baseColor"
           :flood-opacity="eye.shadowOpacity"
           x="0%"
           y="0%"
@@ -93,10 +94,19 @@
           result="dropShadow"
         ></feDropShadow>
       </filter>
+
       <!-- 眼睛: 包含上部分叠加色 -> 眼影 -->
       <linearGradient id="eye-light" gradientTransform="rotate(-25)" x1="50%" y1="0%" x2="50%" y2="100%">
-        <stop offset="20%" :stop-color="eye.color.stopColor1" stop-opacity="1"></stop>
-        <stop offset="100%" :stop-color="eye.color.stopColor2" stop-opacity="0"></stop>
+        <stop
+          offset="20%"
+          :stop-color="isCustomEye == 'eye_no' ? '#555555' : eye.color.stopColor1"
+          stop-opacity="1"
+        ></stop>
+        <stop
+          offset="100%"
+          :stop-color="isCustomEye == 'eye_no' ? eye.color.baseColor : eye.color.stopColor2"
+          stop-opacity="0"
+        ></stop>
       </linearGradient>
 
       <!-- 嘴部灯光 -->
@@ -132,41 +142,27 @@
     </defs>
     <g stroke-linecap="round">
       <!-- head -->
-      <HeadCon :data="head" :type="activeHeadSty" />
+      <HeadCon :data="head" :type="activeHeadSty" :size="'0.5'" />
 
       <!-- eye -->
-      <ellipse
-        :rx="eye.left.rx"
-        :ry="eye.left.ry"
-        :cx="eye.left.cx"
-        :cy="eye.left.cy"
-        :fill="eye.color.baseColor"
-        filter="url(#eye-shadow)"
-      ></ellipse>
-      <ellipse
-        :rx="eye.left.rx"
-        :ry="eye.left.ry"
-        :cx="eye.left.cx"
-        :cy="eye.left.cy"
-        fill="url(#eye-light)"
-        filter="url(#inner-blur)"
-      ></ellipse>
-      <ellipse
-        :rx="eye.right.rx"
-        :ry="eye.right.ry"
-        :cx="eye.right.cx"
-        :cy="eye.right.cy"
-        :fill="eye.color.baseColor"
-        filter="url(#eye-shadow)"
-      ></ellipse>
-      <ellipse
-        :rx="eye.right.rx"
-        :ry="eye.right.ry"
-        :cx="eye.right.cx"
-        :cy="eye.right.cy"
-        fill="url(#eye-light)"
-        filter="url(#inner-blur)"
-      ></ellipse>
+      <g v-for="item in ['left', 'right']" :key="item">
+        <ellipse
+          :rx="eye[item].rx"
+          :ry="eye[item].ry"
+          :cx="eye[item].cx"
+          :cy="eye[item].cy"
+          :fill="eye.color.baseColor"
+          filter="url(#eye-shadow)"
+        ></ellipse>
+        <ellipse
+          :rx="eye[item].rx"
+          :ry="eye[item].ry"
+          :cx="eye[item].cx"
+          :cy="eye[item].cy"
+          fill="url(#eye-light)"
+          filter="url(#inner-blur)"
+        ></ellipse>
+      </g>
 
       <!-- mouth x,y -> d值变化 -->
       <path
@@ -200,7 +196,8 @@ interface VueColorAvatarProps {
   mouth: any
   eye: any
   activeHeadSty: string
-  isCustom: string | 'ok' | 'no'
+  isCustomHead: string | 'ok' | 'no'
+  isCustomEye: string | 'eye_ok' | 'eye_no'
 }
 
 const props = withDefaults(defineProps<VueColorAvatarProps>(), {
@@ -208,7 +205,8 @@ const props = withDefaults(defineProps<VueColorAvatarProps>(), {
   mouth: {},
   eye: {},
   activeHeadSty: 'Head01',
-  isCustom: 'no',
+  isCustomHead: 'no',
+  isCustomEye: 'eye_no',
 })
 
 console.log(`output->svgCon`, props)

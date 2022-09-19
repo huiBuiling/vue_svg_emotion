@@ -8,7 +8,8 @@
           :mouth="mouth"
           :eye="eye"
           :active-head-sty="activeHeadSty"
-          :is-custom="isCustom"
+          :is-custom-head="isCustomHead"
+          :is-custom-eye="isCustomEye"
           @change="tips()"
         />
       </div>
@@ -16,7 +17,9 @@
 
     <!-- 可视化块 -->
     <div class="right">
+      <!-- head -->
       <div class="view">
+        <div class="t_title">头部</div>
         <div class="t_title">是否开启头部自定义配色</div>
         <div
           v-for="item in [
@@ -25,19 +28,20 @@
           ]"
           :key="item.id"
           class="radio checked"
-          @change="changeCustom(item.id)"
+          @change="changeCustomHead(item.id)"
         >
-          <input :id="item.id" v-model="isCustom" :value="item.id" name="custom" type="radio" />
+          <input :id="item.id" v-model="isCustomHead" :value="item.id" name="customHead" type="radio" />
           <label :for="item.id" :data-text="item.name"></label>
           <div class="radio__icon"></div>
         </div>
-
-        <div class="t_title">样式</div>
+        <!-- 样式 -->
+        <br />
         <div
           v-for="item in [
             { name: '样式1', id: 'Head01' },
             { name: '样式2', id: 'Head02' },
-            { name: '样式6', id: 'Head06' },
+            { name: '样式3', id: 'Head03' },
+            { name: '样式4', id: 'Head06' },
           ]"
           :key="item.id"
           class="radio checked"
@@ -47,12 +51,8 @@
           <label :for="item.id" :data-text="item.name"></label>
           <div class="radio__icon"></div>
         </div>
-      </div>
-
-      <!-- head -->
-      <div class="view">
-        <div class="t_title">头部</div>
-        <div class="t_input">
+        <!-- 大小 -->
+        <div v-if="activeHeadSty == 'Head06'" class="t_input">
           <span>大小</span>
           <input
             v-model="head.r"
@@ -67,12 +67,13 @@
 
         <div class="t_color_con">
           <div
-            v-for="item in Object.keys(isCustom == 'no' ? { baseColor: head.color.baseColor } : head.color)"
+            v-for="item in Object.keys(isCustomHead == 'no' ? { baseColor: head.color.baseColor } : head.color)"
             :key="item"
             class="t_color"
           >
             <!-- 默认是哪种类型颜色就会输出对应类型颜色 -->
             <v3-color-picker
+              :colors="colors"
               btn
               size="medium"
               :value="head.color[item] || ''"
@@ -114,9 +115,29 @@
             @change="handleSize($event, 'eye', item)"
           />
         </div>
+
+        <div class="t_title">是否开启眼睛自定义配色</div>
+        <div
+          v-for="item in [
+            { name: '是', id: 'eye_ok' },
+            { name: '否', id: 'eye_no' },
+          ]"
+          :key="item.id"
+          class="radio checked"
+          @change="changeCustomEye(item.id)"
+        >
+          <!-- id和其他radio组的重复，则改变事件会失效 -->
+          <input :id="item.id" v-model="isCustomEye" :value="item.id" name="customEye" type="radio" />
+          <label :for="item.id" :data-text="item.name"></label>
+          <div class="radio__icon"></div>
+        </div>
         <!-- 颜色 -->
         <div class="t_color_con">
-          <div v-for="item in Object.keys(eye.color)" :key="item" class="t_color">
+          <div
+            v-for="item in Object.keys(isCustomEye == 'eye_no' ? { baseColor: eye.color.baseColor } : eye.color)"
+            :key="item"
+            class="t_color"
+          >
             <v3-color-picker
               btn
               size="medium"
@@ -128,6 +149,7 @@
         </div>
       </div>
 
+      <!-- mouth -->
       <div class="view">
         <div class="t_title">嘴巴</div>
         <!-- 大小尺寸 -->
@@ -173,6 +195,28 @@ import { computed, onBeforeMount, onUnmounted, reactive, ref, watch } from 'vue'
 
 import SvgIcon from '@/components/SvgIcon.vue'
 import { getLightenDarkenColor } from '@/utils/index'
+
+// 预选颜色列表
+const colors = [
+  'hsl(10, 75%, 40%)',
+  'hsl(30, 100%, 40%)',
+  'hsl(50, 98%, 50%)',
+  'hsl(70, 69%, 50%)',
+  'hsl(158, 49%, 67%)',
+  'hsl(50, 65%, 76%)',
+  'hsl(205, 69%, 50%)',
+  'hsl(230, 53%, 57%)',
+  'hsl(265, 55%, 20%)',
+  'hsl(305, 77%, 40%)',
+  'hsl(335, 77%, 50%)',
+  'hsl(341, 100%, 85%)',
+  'hsl(44, 100%, 80%)',
+  'hsl(115, 100%, 84%)',
+  'hsl(166, 100%, 73%)',
+  'hsl(205, 100%, 80%)',
+  'hsl(265, 100%, 81%)',
+  'hsl(351, 100%, 67%)',
+]
 
 // 文案对应
 const typeText = {
@@ -244,14 +288,30 @@ const percent = (cur: number, data: { min: number; max: number }) => {
   return `${Math.floor(+val)}%`
 }
 
-const isCustom = ref('no')
-const changeCustom = (e) => {
-  if (e == 'no') {
-    alert('已配置色不会更改且关闭自定义配色选项')
-  }
-  console.log(`output->changeCustom`, e)
-  isCustom.value = e
+const tips = () => {
+  alert('开发中...')
 }
+
+const isCustomHead = ref('no')
+const changeCustomHead = (e) => {
+  if (e == 'no') {
+    // alert('已配置色不会更改且关闭自定义配色选项')
+    const _curBaseColor = head.value.color.baseColor
+    head.value.color = {
+      baseColor: _curBaseColor,
+      stopColor1: getLightenDarkenColor(_curBaseColor, -54),
+      stopColor2: getLightenDarkenColor(_curBaseColor, +50),
+    }
+  }
+  console.log(`output->changeCustomHead`, e)
+  isCustomHead.value = e
+}
+
+const activeHeadSty = ref('Head01')
+const changeHead = (e) => {
+  activeHeadSty.value = e
+}
+
 const head = ref({
   // 切换头部样式，其他颜色跟随基础色
   color: {
@@ -294,20 +354,30 @@ const mouth = ref({
   positionY: 0,
 })
 
+const isCustomEye = ref('eye_no')
+const changeCustomEye = (e) => {
+  if (e == 'eye_no') {
+    // alert('已配置色不会更改且关闭自定义配色选项')
+    const _curBaseColor = eye.value.color.baseColor
+    eye.value.color = {
+      baseColor: _curBaseColor,
+      stopColor1: getLightenDarkenColor(_curBaseColor, -54),
+      stopColor2: getLightenDarkenColor(_curBaseColor, +50),
+    }
+  }
+  console.log(`output->changeCustomEye`, e)
+  isCustomEye.value = e
+}
+
 // 左右眼: 颜色， 尺寸x,y，位置x,y， 类型
 const eye = ref({
   color: {
-    // baseColor: 'rgb(230, 206, 206)',
-    // baseColor: 'hsla(241, 44%, 95%, 0.7)', //'rgb(252, 246, 242)', 'rgba(105,103,254, 0.5)'
-    // shadowColor: '#E71C81',
-    // stopColor1: '#CCCACB',
-    // stopColor2: 'rgb(230, 31, 31)',
-    baseColor: 'rgba(0,0,0,.5)', //'rgb(252, 246, 242)', 'rgba(105,103,254, 0.5)'
-    shadowColor: '#000000',
-    stopColor1: '#000000',
+    baseColor: '#000000', //'rgb(252, 246, 242)', 'rgba(105,103,254, 0.5)'
+    // shadowColor: '#000000',
+    stopColor1: '#555555',
     stopColor2: '#000000',
   },
-  shadowOpacity: 0.8, // ?
+  shadowOpacity: 0.3, // 0.2
   left: {
     rx: 39,
     ry: 39,
@@ -321,15 +391,6 @@ const eye = ref({
     cy: 357,
   },
 })
-
-const tips = () => {
-  alert('开发中...')
-}
-
-const activeHeadSty = ref('Head06')
-const changeHead = (e) => {
-  console.log(`output->changeHead`, e)
-}
 
 // 切换左右眼
 const activeEye = ref('left')
@@ -375,9 +436,25 @@ const handleSize = (e, type: string, nowType) => {
  */
 const changeColor = (e: string, type: string, colorType) => {
   if (type == 'head') {
-    head.value.color[colorType] = e
+    if (isCustomHead.value == 'no') {
+      head.value.color = {
+        baseColor: e,
+        stopColor1: getLightenDarkenColor(e, -54),
+        stopColor2: getLightenDarkenColor(e, +50),
+      }
+    } else {
+      head.value.color[colorType] = e
+    }
   } else if (type == 'eye') {
-    eye.value.color[colorType] = e
+    if (isCustomHead.value == 'eye_no') {
+      eye.value.color = {
+        baseColor: e,
+        stopColor1: '#555555',
+        stopColor2: '#000000',
+      }
+    } else {
+      eye.value.color[colorType] = e
+    }
   } else if (type == 'mouth') {
     mouth.value.color[colorType] = e
   }

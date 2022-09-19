@@ -27,12 +27,14 @@ console.log(`output->headCon`, props)
 <script lang="ts">
 import Head01 from './head/Head01.vue'
 import Head02 from './head/Head02.vue'
+import Head03 from './head/Head03.vue'
 import Head06 from './head/Head06.vue'
 
 export default {
   components: {
     Head01,
     Head02,
+    Head03,
     Head06,
   },
 }
