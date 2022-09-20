@@ -15,8 +15,7 @@
 ## 效果预览
 
 - 对应分支：main
-![image](https://github.com/huiBuiling/vue3-temple/blob/main/Snipaste_2022-09-20_23-21-34.png)
-![image](https://github.com/huiBuiling/vue3-temple/blob/main/result.png)
+![image](https://github.com/huiBuiling/vue3-temple/blob/main/preview.png)
 
 # svg.js
 
