@@ -18,7 +18,7 @@ export const radomDatas = [
       width: 28,
       lightWidth: 6.666666666666667,
       length: 30,
-      rotation: 343,
+      rotation: 188,
     },
     _eye: {
       color: {
@@ -28,8 +28,8 @@ export const radomDatas = [
       },
       shadowOpacity: 0.3, // 0.2
       left: {
-        rx: 62,
-        ry: 62,
+        rx: 50,
+        ry: 50,
         cx: 306 - 130,
         cy: 340 - 180,
       },
@@ -883,45 +883,45 @@ export const radomDatas = [
     },
   },
   // 21
-  // {
-  //   _mouth: {
-  //     path: {
-  //       s: 292,
-  //       c: 342,
-  //       e: 508,
-  //     },
-  //     color: {
-  //       baseColor: 'hsla(322, 81%, 43%, 0.45)',
-  //       shadowColor: '#c20000',
-  //       lightColor: '#ff9667',
-  //       lightColor2: 'hsl(3, 100%, 51%)',
-  //     },
-  //     shadowOpacity: 0.9,
-  //     size: 100,
-  //     width: 41,
-  //     rotation: 344,
-  //     lightWidth: 6.666666666666667,
-  //     length: 30,
-  //   },
-  //   _eye: {
-  //     color: {
-  //       baseColor: '#AA4B87',
-  //       stopColor1: '#dc7db9',
-  //       stopColor2: '#AA4B87',
-  //     },
-  //     shadowOpacity: 0.3, // 0.2
-  //     left: {
-  //       rx: 54 - 20,
-  //       ry: 68 - 20,
-  //       cx: 320 - 130,
-  //       cy: 340 - 180,
-  //     },
-  //     right: {
-  //       rx: 58 - 20,
-  //       ry: 47 - 20,
-  //       cx: 486 - 130,
-  //       cy: 340 - 180,
-  //     },
-  //   },
-  // },
+  {
+    _mouth: {
+      path: {
+        s: 328,
+        c: 378,
+        e: 472,
+      },
+      color: {
+        baseColor: 'hsla(322, 81%, 43%, 0.45)',
+        shadowColor: '#c20000',
+        lightColor: '#ff9667',
+        lightColor2: 'hsl(3, 100%, 51%)',
+      },
+      shadowOpacity: 0.9,
+      size: 100,
+      width: 41,
+      rotation: 154,
+      lightWidth: 6.666666666666667,
+      length: 30,
+    },
+    _eye: {
+      color: {
+        baseColor: '#FF4500',
+        stopColor1: '#ff7732',
+        stopColor2: '#FF4500',
+      },
+      shadowOpacity: 0.3, // 0.2
+      left: {
+        rx: 44 - 20,
+        ry: 44 - 20,
+        cx: 338 - 130,
+        cy: 388 - 180,
+      },
+      right: {
+        rx: 39 - 20,
+        ry: 39 - 20,
+        cx: 420 - 130,
+        cy: 336 - 180,
+      },
+    },
+  },
 ]

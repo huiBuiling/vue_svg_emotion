@@ -44,31 +44,11 @@
       <div class="svg_list">
         <!-- ../../assets/preview/${item}.svg -->
         <img
-          v-for="item in [
-            '01',
-            '02',
-            '03',
-            '04',
-            '05',
-            '06',
-            '07',
-            '08',
-            '09',
-            '10',
-            '11',
-            '12',
-            '13',
-            '14',
-            '15',
-            '16',
-            '17',
-            '18',
-            '19',
-            '20',
-          ]"
+          v-for="(item, index) in svgDatas"
           :key="item"
           :src="getImageUrl(item)"
           alt=""
+          @click="previewSvg(index + 1)"
         />
       </div>
     </div>
@@ -248,6 +228,30 @@ import { onBeforeMount, onMounted, onUnmounted, onUpdated, ref, watch, watchEffe
 import SvgIcon from '@/components/SvgIcon.vue'
 import { colors, getLightenDarkenColor, init_eye, minAndMax, styles, typeText } from '@/utils/index'
 import { radomDatas } from '@/utils/radomDatas'
+
+const svgDatas = [
+  '01',
+  '02',
+  '03',
+  '04',
+  '05',
+  '06',
+  '07',
+  '08',
+  '09',
+  '10',
+  '11',
+  '12',
+  '13',
+  '14',
+  '15',
+  '16',
+  '17',
+  '18',
+  '19',
+  '20',
+  '21',
+]
 
 const tips = () => {
   alert('开发中...')
@@ -459,19 +463,20 @@ const randomize = () => {
 }
 
 // 目前随机方案采用款
-const randomPlan2 = () => {
+const randomPlan2 = (_index?: number) => {
+  console.log(`output->_index`, _index)
   let _headColorIndex = 0
   let _headStyIndex = 0
 
   const plan = 20
-  const _index = Math.floor(Math.random() * plan)
-  // const _index = 10
-  // 单纯变色
-  if (_index === 1) return
-
+  _index = _index ? _index : Math.floor(Math.random() * plan)
   const { _mouth, _eye } = radomDatas[_index - 1]
   // 其他部位也变化
   switch (_index) {
+    case 1:
+      _headColorIndex = 6
+      _headStyIndex = 1
+      break
     case 2:
       _headColorIndex = 2
       _headStyIndex = 1
@@ -553,10 +558,10 @@ const randomPlan2 = () => {
       _headColorIndex = 6
       _headStyIndex = 2
       break
-    // case 21:
-    //   _headColorIndex = 3
-    //   _headStyIndex = 3
-    //   break
+    case 21:
+      _headColorIndex = 3
+      _headStyIndex = 2
+      break
     default:
       break
   }
@@ -652,6 +657,11 @@ const randomPlan1 = () => {
 
   mouth.value.rotation = Math.floor(Math.random() * 360)
   eye.value = { ...eyeData }
+}
+
+// 预览svg
+const previewSvg = (index: number) => {
+  randomPlan2(index)
 }
 
 onBeforeMount(() => {
