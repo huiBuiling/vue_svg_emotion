@@ -103,3 +103,9 @@ const minAndMax = computed(() => {
     - 文件名问题: head.vue -> HeadCon.vue 即可
 
 - ts: 扩张参数必须具有元组类型或传递给 rest 参数
+
+- Parsing error: ',' expected
+
+  - 居然是重复定义变量问题
+
+- vite + vue3 静态资源引入报错 require is not defined

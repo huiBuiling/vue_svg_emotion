@@ -147,18 +147,18 @@
       <!-- eye -->
       <g v-for="item in ['left', 'right']" :key="item">
         <ellipse
-          :rx="eye[item].rx"
-          :ry="eye[item].ry"
-          :cx="eye[item].cx"
-          :cy="eye[item].cy"
+          :rx="eye[item].rx + 20"
+          :ry="eye[item].ry + 20"
+          :cx="eye[item].cx + 130"
+          :cy="eye[item].cy + 180"
           :fill="eye.color.baseColor"
           filter="url(#eye-shadow)"
         ></ellipse>
         <ellipse
-          :rx="eye[item].rx"
-          :ry="eye[item].ry"
-          :cx="eye[item].cx"
-          :cy="eye[item].cy"
+          :rx="eye[item].rx + 20"
+          :ry="eye[item].ry + 20"
+          :cx="eye[item].cx + 130"
+          :cy="eye[item].cy + 180"
           fill="url(#eye-light)"
           filter="url(#inner-blur)"
         ></ellipse>
@@ -171,6 +171,7 @@
         :stroke="mouth.color.baseColor"
         fill="none"
         filter="url(#mouth-shadow)"
+        :transform="`rotate(${mouth.rotation}, 400, 400)`"
       ></path>
       <!-- mouth 灯光 -->
       <path
@@ -179,6 +180,7 @@
         stroke="url(#mouth-light)"
         fill="none"
         filter="url(#inner-blur)"
+        :transform="`rotate(${mouth.rotation}, 400, 400)`"
       ></path>
     </g>
   </svg>

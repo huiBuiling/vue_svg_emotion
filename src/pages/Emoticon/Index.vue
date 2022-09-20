@@ -22,13 +22,62 @@
           copy svg
         </button>
       </div>
+
+      <div class="radio_view">
+        <div class="t_title"><span>选择一种随机生成方案</span></div>
+        <div
+          v-for="item in [
+            { name: '方案1(一切都随机，可能会很抽象！！！)', id: 'random01' },
+            { name: '方案2(选用固定的个人觉得很可爱的组合)', id: 'random02' },
+          ]"
+          :key="item.id"
+          class="radio checked"
+          @change="changeRandom(item.id)"
+        >
+          <input :id="item.id" v-model="activeRandom" :value="item.id" name="radio_random" type="radio" />
+          <label :for="item.id" :data-text="item.name"></label>
+          <div class="radio__icon"></div>
+        </div>
+      </div>
+
+      <div class="svg_list_t"><span>点击其中一项就可以预览哦~~~</span></div>
+      <div class="svg_list">
+        <!-- ../../assets/preview/${item}.svg -->
+        <img
+          v-for="item in [
+            '01',
+            '02',
+            '03',
+            '04',
+            '05',
+            '06',
+            '07',
+            '08',
+            '09',
+            '10',
+            '11',
+            '12',
+            '13',
+            '14',
+            '15',
+            '16',
+            '17',
+            '18',
+            '19',
+            '20',
+          ]"
+          :key="item"
+          :src="getImageUrl(item)"
+          alt=""
+        />
+      </div>
     </div>
 
     <!-- 可视化块 -->
     <div class="right">
       <!-- head -->
       <div class="view">
-        <div class="t_title">头部</div>
+        <div class="t_title t_title2"><span>头部</span></div>
         <div class="t_title">是否开启头部自定义配色</div>
         <div
           v-for="item in [
@@ -85,7 +134,7 @@
 
       <!-- eye -->
       <div class="view">
-        <div class="t_title">眼睛</div>
+        <div class="t_title t_title2"><span>眼睛</span></div>
         <!-- 左眼，右眼 -->
         <div
           v-for="item in [
@@ -104,13 +153,14 @@
         <!-- 大小尺寸 -->
         <div v-for="item in Object.keys(eye[activeEye])" :key="item" class="t_input">
           <span>{{ typeText[item] }}: </span>
+          <!-- v-model="eye[activeEye][item]" -->
           <input
-            v-model="eye[activeEye][item]"
+            :value="eye[activeEye][item]"
             type="range"
             :name="item"
             :min="minAndMax(item).min"
             :max="minAndMax(item).max"
-            :style="{ backgroundSize: percent(eye[activeEye][item], minAndMax(item)) }"
+            :style="{ backgroundSize: percent(item) }"
             @change="handleSize($event, 'eye', item)"
           />
         </div>
@@ -150,12 +200,13 @@
 
       <!-- mouth -->
       <div class="view">
-        <div class="t_title">嘴巴</div>
+        <div class="t_title t_title2"><span>嘴巴</span></div>
         <!-- 大小尺寸 -->
         <div
           v-for="item in [
             { name: 'size', num: mouth.size },
             { name: 'width', num: mouth.width },
+            { name: 'rotation', num: mouth.rotation },
           ]"
           :key="item.name"
           class="t_input"
@@ -195,22 +246,43 @@ import { V3ColorPicker } from 'v3-color-picker'
 import { onBeforeMount, onMounted, onUnmounted, onUpdated, ref, watch, watchEffect } from 'vue'
 
 import SvgIcon from '@/components/SvgIcon.vue'
-import { colors, getLightenDarkenColor, minAndMax, percent, styles, typeText } from '@/utils/index'
+import { colors, getLightenDarkenColor, init_eye, minAndMax, styles, typeText } from '@/utils/index'
+import { radomDatas } from '@/utils/radomDatas'
 
 const tips = () => {
   alert('开发中...')
 }
 
+// svg 引入
+const getImageUrl = (name: string) => {
+  return new URL(`../../assets/preview/${name}.svg`, import.meta.url).href
+}
+
+// 进度条比例
+const percent = (item: string) => {
+  const cur = eye.value[activeEye.value][item]
+  const _cur = minAndMax(item).max
+  const val = ((cur / _cur) * 100).toFixed(2)
+  console.log(`output->percent`, item, cur, _cur, val)
+  return `${Math.floor(+val)}%`
+}
+
 const isCustomHead = ref('no')
 const isCustomEye = ref('eye_no')
-const changeCustom = (e, type) => {
+const changeCustom = (e, type, color?) => {
   if (type == 'head') {
     isCustomHead.value = e
-    e == 'no' && changeColor(head.value.color.baseColor, 'head')
+    e == 'no' && changeColor(color || head.value.color.baseColor, 'head')
   } else {
     isCustomEye.value = e
     e == 'eye_no' && changeColor('#000000', 'eye')
   }
+}
+
+// 切换随机方案
+const activeRandom = ref('random02')
+const changeRandom = (e) => {
+  activeRandom.value = e
 }
 
 // 切换头部样式
@@ -220,13 +292,13 @@ const changeHead = (e) => {
 }
 
 // 切换左右眼
-const activeEye = ref('left')
+let activeEye = ref('left')
 const changeEye = (e) => {
   console.log(`output->e`, e, eye[e])
   activeEye.value = e
 }
 
-const head = ref({
+let head = ref({
   // 切换头部样式，其他颜色跟随基础色
   color: {
     baseColor: '#FDC855', // FFB3CB
@@ -239,7 +311,7 @@ const head = ref({
   maxW: 250,
 })
 
-const mouth = ref({
+let mouth = ref({
   path: {
     s: 350,
     c: 400,
@@ -257,38 +329,20 @@ const mouth = ref({
   shadowOpacity: 0.9, // ?
   size: 100,
   width: 28,
-  lightWidth: 6.666666666666667,
   length: 30,
-  type: 1, // 'smile -> 1 /frown -> 2'
-  rotation: 30,
-  positionX: 0,
-  positionY: 0,
+  lightWidth: 6.666666666666667,
+  rotation: 0,
+  // type: 1, // 'smile -> 1 /frown -> 2'
+  // positionX: 0,
+  // positionY: 0,
 })
 
 // 左右眼: 颜色， 尺寸x,y，位置x,y， 类型
-const eye = ref({
-  color: {
-    baseColor: '#000000', //'rgb(252, 246, 242)', 'rgba(105,103,254, 0.5)'
-    stopColor1: '#555555',
-    stopColor2: '#000000',
-  },
-  shadowOpacity: 0.3, // 0.2
-  left: {
-    rx: 39,
-    ry: 39,
-    cx: 318,
-    cy: 357,
-  },
-  right: {
-    rx: 39,
-    ry: 39,
-    cx: 482,
-    cy: 357,
-  },
-})
+let eye = ref(init_eye)
 
 // 切换大小
 const handleSize = (e, type: string, nowType) => {
+  console.log(`output->handleSize`, type, +e.target.value)
   if (type == 'head') {
     head.value[nowType] = +e.target.value
   } else if (type == 'eye') {
@@ -397,8 +451,127 @@ const setSvgData = () => {
  * 随机生成
  */
 const randomize = () => {
+  if (activeRandom.value === 'random01') {
+    randomPlan1()
+  } else {
+    randomPlan2()
+  }
+}
+
+// 目前随机方案采用款
+const randomPlan2 = () => {
+  let _headColorIndex = 0
+  let _headStyIndex = 0
+
+  const plan = 20
+  const _index = Math.floor(Math.random() * plan)
+  // const _index = 10
+  // 单纯变色
+  if (_index === 1) return
+
+  const { _mouth, _eye } = radomDatas[_index - 1]
+  // 其他部位也变化
+  switch (_index) {
+    case 2:
+      _headColorIndex = 2
+      _headStyIndex = 1
+      break
+    case 3:
+      _headColorIndex = 11
+      _headStyIndex = 0
+      break
+    case 4:
+      _headColorIndex = 4
+      _headStyIndex = 0
+      break
+    case 55:
+      _headColorIndex = 18
+      _headStyIndex = 0
+      break
+    case 5:
+      _headColorIndex = 18
+      _headStyIndex = 0
+      break
+    case 6:
+      _headColorIndex = 12
+      _headStyIndex = 0
+      break
+    case 7:
+      _headColorIndex = 6
+      _headStyIndex = 1
+      break
+    case 8:
+      _headColorIndex = 20
+      _headStyIndex = 1
+      break
+    case 9:
+      _headColorIndex = 3
+      _headStyIndex = 3
+      break
+    case 10:
+      _headColorIndex = 9
+      _headStyIndex = 1
+      break
+    case 11:
+      _headColorIndex = 19
+      _headStyIndex = 3
+      break
+    case 12:
+      _headColorIndex = 10
+      _headStyIndex = 0
+      break
+    case 13:
+      _headColorIndex = 6
+      _headStyIndex = 2
+      break
+    case 14:
+      _headColorIndex = 6
+      _headStyIndex = 0
+      break
+    case 15:
+      _headColorIndex = 17
+      _headStyIndex = 0
+      break
+
+    case 16:
+      _headColorIndex = 15
+      _headStyIndex = 0
+      break
+    case 17:
+      _headColorIndex = 12
+      _headStyIndex = 1
+      break
+    case 18:
+      _headColorIndex = 2
+      _headStyIndex = 0
+      break
+    case 19:
+      _headColorIndex = 15
+      _headStyIndex = 3
+      break
+    case 20:
+      _headColorIndex = 6
+      _headStyIndex = 2
+      break
+    // case 21:
+    //   _headColorIndex = 3
+    //   _headStyIndex = 3
+    //   break
+    default:
+      break
+  }
+
+  changeCustom('no', 'head', colors[_headColorIndex])
+  activeHeadSty.value = styles[_headStyIndex].id
+
+  eye.value = _eye
+  mouth.value = _mouth
+}
+
+// 随机方案
+const randomPlan1 = () => {
   const _headColorIndex = Math.floor(Math.random() * colors.length)
-  changeColor(colors[_headColorIndex], 'head')
+  changeCustom('no', 'head', colors[_headColorIndex])
 
   const _headStyIndex = Math.floor(Math.random() * styles.length)
   activeHeadSty.value = styles[_headStyIndex].id
@@ -407,12 +580,84 @@ const randomize = () => {
   /**
    * 眼睛大小
    * 1. 一起缩放
-   * 2. 左眼 + 右眼
-   * 3. 位置偏移，建议一次一边即可
+   * 2. 左眼缩放+偏移
+   * 3. 右眼缩放+偏移
+   * 4. 无任何操作
+   *
+   * 2. 一起偏移
    */
+  // 方案几
+  const plan = 5
+  const _index = Math.floor(Math.random() * plan)
+  if (_index === 5) return
+  let eyeData = { ...init_eye }
+  let _curIndex, _curIndex2
+  switch (_index) {
+    case 1:
+      _curIndex = Math.floor(Math.random() * minAndMax('rx').max)
+      console.log(`output->_index1`, _index, _curIndex)
+      if (_curIndex % 2 === 0) {
+        eyeData.left = {
+          ...eyeData.left,
+          rx: _curIndex,
+          ry: _curIndex,
+        }
+      } else {
+        eyeData.right = {
+          ...eyeData.right,
+          rx: _curIndex,
+          ry: _curIndex,
+        }
+      }
+      break
+    // case 2:
+    //   // 太随机，后期设置几个备选项
+    //   _curIndex = Math.floor(Math.random() * minAndMax('cx').max) + minAndMax('cx').min
+    //   console.log(`output->_index2`, _index, _curIndex)
+    //   eyeData.left = {
+    //     ...eyeData.left,
+    //     cx: _curIndex,
+    //     cy: _curIndex,
+    //   }
+    //   eyeData.right = {
+    //     ...eyeData.right,
+    //     cx: _curIndex,
+    //     cy: _curIndex,
+    //   }
+    //   break
+    case 2:
+      _curIndex = Math.floor(Math.random() * minAndMax('rx').max)
+      _curIndex2 = Math.floor(Math.random() * minAndMax('cx').max) + minAndMax('cx').min
+      eyeData.left = {
+        rx: _curIndex,
+        ry: _curIndex,
+        cx: _curIndex2,
+        cy: _curIndex2,
+      }
+      break
+    case 3:
+      _curIndex = Math.floor(Math.random() * minAndMax('rx').max)
+      _curIndex2 = Math.floor(Math.random() * minAndMax('cx').max) + minAndMax('cx').min
+      eyeData.right = {
+        rx: _curIndex,
+        ry: _curIndex,
+        cx: _curIndex2,
+        cy: _curIndex2,
+      }
+      break
+
+    default:
+      break
+  }
+
+  mouth.value.rotation = Math.floor(Math.random() * 360)
+  eye.value = { ...eyeData }
 }
 
 onBeforeMount(() => {
+  randomPlan2()
+
+  // eye.value = { ...init_eye }
   // randomize()
   // const e = {
   //   target: {
@@ -420,10 +665,6 @@ onBeforeMount(() => {
   //   },
   // }
   // handleSize(e, 'mouth', 'size')
-})
-
-onMounted(() => {
-  setSvgData()
 })
 
 // watch(
@@ -436,6 +677,10 @@ onMounted(() => {
 //   { deep: true }
 //   { immediate: true }
 // )
+
+onMounted(() => {
+  setSvgData()
+})
 
 onUpdated(() => {
   setSvgData()

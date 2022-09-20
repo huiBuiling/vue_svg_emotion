@@ -153,6 +153,7 @@ const typeText = {
   size: '大小',
   width: '嘴厚',
   lightWidth: '光宽',
+  rotation: '旋转',
 }
 
 // 眼睛可设置的最大最小值
@@ -161,21 +162,25 @@ const minAndMax = (type) => {
   let max = 10
   switch (type) {
     case 'rx':
-      min = 10
-      max = 200
+      min = 0
+      max = 80
       break
     case 'ry':
-      min = 5
-      max = 200
+      min = 0
+      max = 80
       break
     case 'cx':
-      // min 太大，导致样式有些许不准确
-      min = 30
-      max = 650
+      // min 太大，导致样式有些许不准确,所以通过svg数据设置时+最小值
+      // min = 130
+      // max = 650
+      min = 0
+      max = 520
       break
     case 'cy':
-      min = 30
-      max = 650
+      // min = 180
+      // max = 600
+      min = 0
+      max = 420
       break
     case 'm_size':
       // min = 50
@@ -186,6 +191,10 @@ const minAndMax = (type) => {
     case 'm_width':
       min = 0
       max = 50
+      break
+    case 'm_rotation':
+      min = 0
+      max = 360
       break
     // case 'm_light':
     //   min = 30
@@ -198,14 +207,28 @@ const minAndMax = (type) => {
   return { min, max }
 }
 
-// 进度条比例
-const percent = (cur: number, data: { min: number; max: number }) => {
-  const _cur = data.max
-  const val = ((cur / _cur) * 100).toFixed(2)
-  return `${Math.floor(+val)}%`
+const init_eye = {
+  color: {
+    baseColor: '#000000',
+    stopColor1: '#555555',
+    stopColor2: '#000000',
+  },
+  shadowOpacity: 0.3, // 0.2
+  left: {
+    rx: 19,
+    ry: 19,
+    cx: 176,
+    cy: 160,
+  },
+  right: {
+    rx: 19,
+    ry: 19,
+    cx: 356,
+    cy: 160,
+  },
 }
 
-export { colors, dealHsl, getLightenDarkenColor, minAndMax, percent, styles, typeText }
+export { colors, dealHsl, getLightenDarkenColor, init_eye, minAndMax, styles, typeText }
 
 /**
  * #194199(hsl(221, 72%, 35%)
