@@ -2,8 +2,10 @@
 
 ## 参考这些个大大的作品：
 
-- https://github.com/Codennnn/vue-color-avatar
 - https://fffuel.co/ccclaymoji/
+
+## 访问地址
+- http://47.112.253.77:30007/
 
 ## 运行
 
@@ -11,9 +13,6 @@
 - yarn -> yarn dev
 
 ## 效果预览
-
-- 对应分支：master or v_pinia, 区别与是否有使用 pinia
-  ![image](https://github.com/huiBuiling/vue3-temple/blob/master/result.png)
 
 - 对应分支：main
   ![image](https://github.com/huiBuiling/vue3-temple/blob/main/result.png)
