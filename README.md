@@ -1,4 +1,4 @@
-# vue3-svg
+# vue_svg_emotion
 
 ## 参考这些个大大的作品：
 
@@ -14,8 +14,13 @@
 
 ## 效果预览
 
-- 对应分支：main
-![image](https://github.com/huiBuiling/vue3-temple/blob/main/preview.png)
+![image](https://user-images.githubusercontent.com/20200628/192677023-2d96ffad-4391-4d3d-8e6a-c9c40aed5e2e.png)
+
+- 21项随机生成图
+![image](https://user-images.githubusercontent.com/20200628/192677086-cee51500-1ca0-4782-9ffc-77dc5cf6a353.png)
+
+- emmm
+![image](https://user-images.githubusercontent.com/20200628/192677054-d21ca79a-3219-492d-82a6-d70b0dc4008a.png)
 
 # svg.js
 
