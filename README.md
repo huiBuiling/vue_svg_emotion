@@ -5,7 +5,7 @@
 - https://fffuel.co/ccclaymoji/
 
 ## 访问地址
-- http://47.112.253.77:30007/
+- https://emotional.qkie.cn/
 
 ## 运行
 
